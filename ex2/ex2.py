@@ -22,6 +22,7 @@ class BrownCorpus(object):
         # this dict will look like { word1 : {tag1 : count tag 1, tag2 : count tag 2...}}
         self.word_tag_max_dict = {}
         self.words_count = {}
+        self.max_tags = {}
 
         self.tag_tag_counts_dict = {}
 
@@ -72,10 +73,13 @@ class BrownCorpus(object):
         """
         if word not in self.training_set_word_tag:
             return 'NN'
-        tags_pressed = sorted(list(self.training_set_word_tag[word].items()),
-                            key=lambda x: x[1], reverse=True)
-        self.word_tag_max_dict[word] = \
-            tags_pressed[0][TAG]
+        if word not in self.max_tags:
+            tags_pressed = sorted(list(self.training_set_word_tag[word].items()),
+                                  key=lambda x: x[1], reverse=True)
+            self.max_tags[word] = \
+                tags_pressed[0][TAG]
+        return self.max_tags[word]
+
 
     def emission(self, word, tag):
         # this function will calculate P(tag | word)
@@ -88,6 +92,32 @@ class BrownCorpus(object):
             return 0
         return self.tag_tag_counts_dict[tag_1][tag] / \
                self.tag_tag_counts_dict[tag_1][TOTAL]
+
+    def calculate_errors(self):
+        """
+        this function calculate the training, test and total model errors.
+        and return it as a tuple
+        """
+        ## training error
+        training_misses, training_words = 0,0
+        for sentence in self.training_set:
+            for word, tag in sentence:
+                training_misses += 1 if tag != self.get_max_tag(word) else 0
+                training_words += 1
+
+        ## test error
+        test_misses, test_words = 0, 0
+        for sentence in self.test_set:
+            for word, tag in sentence:
+                test_misses += 1 if tag != self.get_max_tag(word) else 0
+                test_words += 1
+
+        ## total error
+        total_error = (training_misses + test_misses) / (training_words + test_words)
+
+        return training_misses / training_words, test_misses / test_words, total_error
+
+    
 
 
 def main():
