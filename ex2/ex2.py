@@ -16,12 +16,11 @@ class BrownCorpus(object):
         brown_news_tagged = brown.tagged_sents(categories='news')
         brown_news_tagged_size = len(brown_news_tagged)
         training_set_size = round(brown_news_tagged_size * percentage / 100)
-        self.training_set = brown_news_tagged[-training_set_size:]
-        self.test_set = brown_news_tagged[:brown_news_tagged_size - training_set_size]
+        self.test_set = brown_news_tagged[-training_set_size:]
+        self.training_set = brown_news_tagged[:brown_news_tagged_size - training_set_size]
 
-        # this dict will look like { word1 : {tag1 : count tag 1, tag2 : count tag 2...}}
-        self.word_tag_max_dict = {}
         self.words_count = {}
+        self.tags_count = {}
         self.max_tags = {}
 
         self.tag_tag_counts_dict = {}
@@ -32,6 +31,9 @@ class BrownCorpus(object):
         # so, for each pair, if it's the first time we encountered initialize the value
         # to be 1, otherwise, value++
         self.training_set_word_tag = {}
+
+        self.training_set_tag_word = {}
+
         for sentence in self.training_set:
             for word, tag in sentence:
                 if word not in self.training_set_word_tag:
@@ -42,29 +44,31 @@ class BrownCorpus(object):
                 self.training_set_word_tag[word][tag] += 1
                 self.words_count[word] += 1
 
-            for idx in range(1,len(sentence)):
-                # we can change this line of code to set biGram,
-                # triGram or whatever we like :D
-                tag_1, tag = sentence[idx-1][TUPLE_TAG], sentence[idx][TUPLE_TAG]
-                if tag_1 not in self.tag_tag_counts_dict:
-                    self.tag_tag_counts_dict[tag_1] = {TOTAL : 0}
-                if tag not in self.tag_tag_counts_dict[tag_1]:
-                    self.tag_tag_counts_dict[tag_1][tag] = 0
-                self.tag_tag_counts_dict[tag_1][tag] += 1
-                self.tag_tag_counts_dict[tag_1][TOTAL] += 1
+        for sentence in self.training_set:
+            for word, tag in sentence:
+                if tag not in self.training_set_tag_word:
+                    self.training_set_tag_word[tag] = {}
+                    self.tags_count[tag] = 0
+                if word not in self.training_set_tag_word[tag]:
+                    self.training_set_tag_word[tag][word] = 0
+                self.training_set_tag_word[tag][word] += 1
+                self.tags_count[tag] += 1
 
-    def calc_test_set_error_rate(self):
-        misses = 0
-        tries = 0
-        # iterating over (w,t) pairs in test set. foreach word check if the max
-        # tag equals to the tagged word.
-        # if it is count is as 'hit' otherwise as a 'miss' in the end we will
-        # calculate the miss rate as (total misses / total shots)
-        for sentence in self.test_set:
-            for w,t in sentence:
-                misses += 0 if t == self.word_tag_max_dict[w][TAG] else 1
-                tries += 1
-        return misses / tries
+        # we can change this line of code to set biGram,
+        # triGram or whatever we like :D
+        for sentence in self.training_set:
+            for idx in range(1, len(sentence)):
+                prev_tag, tag = sentence[idx-1][TUPLE_TAG], sentence[idx][TUPLE_TAG]
+                if prev_tag not in self.tag_tag_counts_dict:
+                    self.tag_tag_counts_dict[prev_tag] = {}
+                if tag not in self.tag_tag_counts_dict[prev_tag]:
+                    self.tag_tag_counts_dict[prev_tag][tag] = 0
+                self.tag_tag_counts_dict[prev_tag][tag] += 1
+
+
+
+        print(self.calculate_errors())
+
 
     def get_max_tag(self, word):
         """
@@ -82,16 +86,18 @@ class BrownCorpus(object):
 
 
     def emission(self, word, tag):
-        # this function will calculate P(tag | word)
-        if tag not in self.training_set_word_tag[word]:
+        # this function will calculate p (word | tag)
+        if word not in self.training_set_tag_word[tag]:
             return 0
-        return self.training_set_word_tag[word][tag] / self.words_count[word]
+        return self.training_set_tag_word[tag][word] / self.tags_count[tag]
 
-    def transition(self, tag, tag_1):
-        if tag not in self.tag_tag_counts_dict[tag_1]:
+    def transition(self, prev_tag, tag):
+        if prev_tag not in self.tag_tag_counts_dict:
             return 0
-        return self.tag_tag_counts_dict[tag_1][tag] / \
-               self.tag_tag_counts_dict[tag_1][TOTAL]
+        if tag not in self.tag_tag_counts_dict[prev_tag]:
+            return 0
+        return self.tag_tag_counts_dict[prev_tag][tag] / \
+               self.tags_count[prev_tag]
 
     def print_training_set_word_tag(self):
         for word, tag in self.training_set_word_tag.items():
@@ -119,6 +125,7 @@ class BrownCorpus(object):
 
         ## total error
         total_error = (training_misses + test_misses) / (training_words + test_words)
+
 
         return training_misses / training_words, test_misses / test_words, total_error
 
