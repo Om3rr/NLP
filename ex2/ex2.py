@@ -7,6 +7,7 @@ FREQ = 1
 TUPLE_TAG = 1
 TOTAL = 'total'
 
+
 class BrownCorpus(object):
 
     def __init__(self, percentage):
@@ -29,76 +30,64 @@ class BrownCorpus(object):
         # (= number of occurrences) of the tag following to the word in all sentences.
         # so, for each pair, if it's the first time we encountered initialize the value
         # to be 1, otherwise, value++
-        self.training_set_word_tag = {} ## we can check if it is possible to get all the words and insert them into Set and than convert it to Dict.. (oneliner)
+        self.training_set_word_tag = {}
         for sentence in self.training_set:
             for word, tag in sentence:
-                if(word not in self.training_set_word_tag):
+                if word not in self.training_set_word_tag:
                     self.training_set_word_tag[word] = {}
                     self.words_count[word] = 0
-                if(tag not in self.training_set_word_tag[word]):
+                if tag not in self.training_set_word_tag[word]:
                     self.training_set_word_tag[word][tag] = 0
                 self.training_set_word_tag[word][tag] += 1
                 self.words_count[word] += 1
 
-            for idx in range(1,len(sentence)): # we can change this line of code to set biGram, triGram or whatever we like :D
+            for idx in range(1,len(sentence)):
+                # we can change this line of code to set biGram,
+                # triGram or whatever we like :D
                 tag_1, tag = sentence[idx-1][TUPLE_TAG], sentence[idx][TUPLE_TAG]
-                if(tag_1 not in self.tag_tag_counts_dict):
+                if tag_1 not in self.tag_tag_counts_dict:
                     self.tag_tag_counts_dict[tag_1] = {TOTAL : 0}
-                if (tag not in self.tag_tag_counts_dict[tag_1]):
+                if tag not in self.tag_tag_counts_dict[tag_1]:
                     self.tag_tag_counts_dict[tag_1][tag] = 0
                 self.tag_tag_counts_dict[tag_1][tag] += 1
                 self.tag_tag_counts_dict[tag_1][TOTAL] += 1
 
-
-
-    # def get_list_most_suitable_tag_word(self):
-    #     """
-    #     p(tag|word) = count(word, tag) / count(word)
-    #     :return: list of word with tag which max p(tag | word)
-    #     """
-    #
-    #     for word, tags_dict in self.training_set_word_tag.items():
-    #         tagsParsed = sorted(list(tags_dict.items()), key=lambda x:x[1], reverse=True)
-    #         self.word_tag_max_dict[word] = \
-    #             tagsParsed[0][TAG]
-
-    def calcTestSetErrorRate(self):
+    def calc_test_set_error_rate(self):
         misses = 0
         tries = 0
-        #iterating over (w,t) pairs in test set. foreach word check if the max tag equals to the tagged word.
-        #if it is count is as 'hit' otherwise as a 'miss' in the end we will calculate the miss rate as (total misses / total shots)
+        # iterating over (w,t) pairs in test set. foreach word check if the max
+        # tag equals to the tagged word.
+        # if it is count is as 'hit' otherwise as a 'miss' in the end we will
+        # calculate the miss rate as (total misses / total shots)
         for sentence in self.test_set:
             for w,t in sentence:
                 misses += 0 if t == self.word_tag_max_dict[w][TAG] else 1
                 tries += 1
         return misses / tries
 
-    def getKnownMaximizeTag(self, word):
+    def get_max_tag(self, word):
         """
         :param word: word to check for the most common tag.
-        :return:  the tag that maximize P(tag|word)
+        :return: the tag that maximize P(tag|word)
         """
-        if(word not in self.training_set_word_tag):
+        if word not in self.training_set_word_tag:
             return 'NN'
-        tagsParsed = sorted(list(self.training_set_word_tag[word].items()), key=lambda x: x[1], reverse=True)
+        tags_pressed = sorted(list(self.training_set_word_tag[word].items()),
+                            key=lambda x: x[1], reverse=True)
         self.word_tag_max_dict[word] = \
-            tagsParsed[0][TAG]
-
+            tags_pressed[0][TAG]
 
     def emission(self, word, tag):
         # this function will calculate P(tag | word)
-        if(tag not in self.training_set_word_tag[word]):
+        if tag not in self.training_set_word_tag[word]:
             return 0
         return self.training_set_word_tag[word][tag] / self.words_count[word]
 
     def transition(self, tag, tag_1):
-        if (tag not in self.tag_tag_counts_dict[tag_1]):
+        if tag not in self.tag_tag_counts_dict[tag_1]:
             return 0
-        return self.tag_tag_counts_dict[tag_1][tag] / self.tag_tag_counts_dict[tag_1][TOTAL]
-
-
-
-
+        return self.tag_tag_counts_dict[tag_1][tag] / \
+               self.tag_tag_counts_dict[tag_1][TOTAL]
 
 
 def main():
