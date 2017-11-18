@@ -57,6 +57,7 @@ class BrownCorpus(object):
         # we can change this line of code to set biGram,
         # triGram or whatever we like :D
         for sentence in self.training_set:
+            sentence += [('','STOP')]
             for idx in range(1, len(sentence)):
                 prev_tag, tag = sentence[idx-1][TUPLE_TAG], sentence[idx][TUPLE_TAG]
                 if prev_tag not in self.tag_tag_counts_dict:
@@ -64,6 +65,7 @@ class BrownCorpus(object):
                 if tag not in self.tag_tag_counts_dict[prev_tag]:
                     self.tag_tag_counts_dict[prev_tag][tag] = 0
                 self.tag_tag_counts_dict[prev_tag][tag] += 1
+
 
 
 
@@ -149,7 +151,14 @@ class BrownCorpus(object):
         return w_freq, w
 
     def viterbi(self, words):
-        tag_n, = max([self.pi(words, len(words), w) for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])[0]
+        tags = []
+        _,last_tag = max([self.pi(words, len(words), w) * self.transition(w, 'STOP') for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])
+        tags.append(last_tag)
+        for idx in range(len(words),0,-1):
+            last_tag = self.pi(words, idx, last_tag)
+            tags.append(last_tag)
+        return last_tag[::-1]
+
 
 
 def main():
