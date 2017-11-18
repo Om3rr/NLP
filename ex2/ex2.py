@@ -89,6 +89,8 @@ class BrownCorpus(object):
 
     def emission(self, word, tag):
         # this function will calculate p (word | tag)
+        if tag not in self.training_set_tag_word:
+            return 0
         if word not in self.training_set_tag_word[tag]:
             return 0
         return self.training_set_tag_word[tag][word] / self.tags_count[tag]
@@ -139,25 +141,28 @@ class BrownCorpus(object):
         return mult
 
     def pi(self,words, k, v):
-        if k == 0 and v == '*':
-            return 1
+        if k == 0:
+            return 1, '*'
         if (k,v) in self.viterbiTable:
             return self.viterbiTable[(k,v)]
         w_freq, w = max([(self.pi(words, k-1,w)[0] * self.transition(v,w) * self.emission(words[k], v)
                           , w)
-                         for w in self.tag_tag_counts_dict.keys()],
+                         for w in self.tag_tag_counts_dict],
                     key=lambda x:x[0])
         self.viterbiTable[(k,v)] = (w_freq, w)
         return w_freq, w
 
     def viterbi(self, words):
         tags = []
-        _,last_tag = max([self.pi(words, len(words), w) * self.transition(w, 'STOP') for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])
+        words = ["*"] + words.split(" ")
+        _,last_tag = max([(self.pi(words, len(words) - 1, w)[0] * self.transition(w, 'STOP') , w)
+                          for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])
         tags.append(last_tag)
-        for idx in range(len(words),0,-1):
+        for idx in range(len(words) - 1,1,-1):
             last_tag = self.pi(words, idx, last_tag)
-            tags.append(last_tag)
-        return last_tag[::-1]
+            tags.append(last_tag[1])
+
+        return tags[::-1]
 
 
 
