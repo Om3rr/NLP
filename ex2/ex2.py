@@ -52,6 +52,11 @@ class BrownCorpus(object):
                 self.tag_tag_counts_dict[tag_1][tag] += 1
                 self.tag_tag_counts_dict[tag_1][TOTAL] += 1
 
+        self.print_training_set_word_tag()
+        for sentence in self.test_set:
+            print(sentence)
+
+
     def calc_test_set_error_rate(self):
         misses = 0
         tries = 0
@@ -76,6 +81,7 @@ class BrownCorpus(object):
                             key=lambda x: x[1], reverse=True)
         self.word_tag_max_dict[word] = \
             tags_pressed[0][TAG]
+        return self.word_tag_max_dict[word]
 
     def emission(self, word, tag):
         # this function will calculate P(tag | word)
@@ -88,6 +94,13 @@ class BrownCorpus(object):
             return 0
         return self.tag_tag_counts_dict[tag_1][tag] / \
                self.tag_tag_counts_dict[tag_1][TOTAL]
+
+    def print_training_set_word_tag(self):
+        for word, tag in self.training_set_word_tag.items():
+            #print(word, self.get_max_tag(word))
+            print(word, tag)
+
+
 
 
 def main():
