@@ -67,7 +67,7 @@ class BrownCorpus(object):
 
 
 
-        print(self.calculate_errors())
+        self.viterbiTable = {}
 
 
     def get_max_tag(self, word):
@@ -129,7 +129,27 @@ class BrownCorpus(object):
 
         return training_misses / training_words, test_misses / test_words, total_error
 
+    def r(self,k, words, tags):
+        mult = 1
+        for idx in range(1,k):
+            mult *= self.transition(tags[idx-1], tags[idx])
+            mult *= self.emission(words[idx], tags[idx])
+        return mult
 
+    def pi(self,words, k, v):
+        if k == 0 and v == '*':
+            return 1
+        if (k,v) in self.viterbiTable:
+            return self.viterbiTable[(k,v)]
+        w_freq, w = max([(self.pi(words, k-1,w)[0] * self.transition(v,w) * self.emission(words[k], v)
+                          , w)
+                         for w in self.tag_tag_counts_dict.keys()],
+                    key=lambda x:x[0])
+        self.viterbiTable[(k,v)] = (w_freq, w)
+        return w_freq, w
+
+    def viterbi(self, words):
+        tag_n, = max([self.pi(words, len(words), w) for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])[0]
 
 
 def main():
