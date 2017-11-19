@@ -93,7 +93,18 @@ class BrownCorpus(object):
             return 0
         if word not in self.training_set_tag_word[tag]:
             return 0
+
         return self.training_set_tag_word[tag][word] / self.tags_count[tag]
+
+    def emission_add_1_smoothing(self, word, tag):
+        # this function will calculate p add_1(word | tag)
+        if tag not in self.training_set_tag_word:
+            return 0
+        if word not in self.training_set_tag_word[tag]:
+            return 0
+        num_of_tags = len(self.tags_count)
+        return (self.training_set_tag_word[tag][word] + 1) / \
+               (self.tags_count[tag] + num_of_tags)
 
     def transition(self, prev_tag, tag):
         if prev_tag not in self.tag_tag_counts_dict:
@@ -103,10 +114,6 @@ class BrownCorpus(object):
         return self.tag_tag_counts_dict[prev_tag][tag] / \
                self.tags_count[prev_tag]
 
-    def print_training_set_word_tag(self):
-        for word, tag in self.training_set_word_tag.items():
-            #print(word, self.get_max_tag(word))
-            print(word, tag)
 
     def calculate_errors(self):
         """
@@ -164,6 +171,21 @@ class BrownCorpus(object):
 
         return tags[::-1]
 
+    def print_training_tag_word_dict(self):
+        print(self.training_set_tag_word)
+
+    def print_training_word_tag_dict(self):
+        print(self.training_set_word_tag)
+
+    def print_tags_count(self):
+
+        print(sorted(list(self.tags_count.items()),
+                                  key=lambda x: x[1], reverse=True))
+
+    def print_words_count(self):
+        print(sorted(list(self.words_count.items()),
+                                  key=lambda x: x[1], reverse=True))
+
 
 
 def main():
@@ -174,6 +196,14 @@ def main():
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_suitable_tag_word()
+
+    bc.print_training_tag_word_dict()
+    bc.print_training_word_tag_dict()
+
+    print(bc.emission('Nothing', 'PN-HL'))
+
+    print(bc.emission_add_1_smoothing('Nothing', 'PN-HL'))
+
 
 main()
 
