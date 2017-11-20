@@ -23,6 +23,21 @@ class BrownCorpus(object):
         self.tags_count = {}
         self.max_tags = {}
 
+        self.known_words = set()
+        self.test_words = set()
+        self.unknown_words = set()
+
+        for sentence in self.training_set:
+            for word, tag in sentence:
+                self.known_words.add(word)
+
+        for sentence in self.test_set:
+            for word, tag in sentence:
+                self.test_words.add(word)
+
+        # set of unknown words = test words Minus known words
+        self.unknown_words = self.test_words - self.known_words
+
         self.tag_tag_counts_dict = {}
 
         # initialize the dictionary training_set_word_tag such that for each tuple
@@ -66,11 +81,7 @@ class BrownCorpus(object):
                     self.tag_tag_counts_dict[prev_tag][tag] = 0
                 self.tag_tag_counts_dict[prev_tag][tag] += 1
 
-
-
-
         self.viterbiTable = {}
-
 
     def get_max_tag(self, word):
         """
@@ -114,31 +125,32 @@ class BrownCorpus(object):
         return self.tag_tag_counts_dict[prev_tag][tag] / \
                self.tags_count[prev_tag]
 
-
     def calculate_errors(self):
         """
         this function calculate the training, test and total model errors.
         and return it as a tuple
         """
-        ## training error
-        training_misses, training_words = 0,0
+        # known words error rate
+        known_words_misses, known_words = 0,0
         for sentence in self.training_set:
             for word, tag in sentence:
-                training_misses += 1 if tag != self.get_max_tag(word) else 0
-                training_words += 1
+                known_words_misses += 1 if tag != self.get_max_tag(word) else 0
+                known_words += 1
 
-        ## test error
-        test_misses, test_words = 0, 0
+        # unknown words error rate
+        unknown_words_misses, unknown_words = 0, 0
         for sentence in self.test_set:
             for word, tag in sentence:
-                test_misses += 1 if tag != self.get_max_tag(word) else 0
-                test_words += 1
+                if word in self.unknown_words:
+                    unknown_words_misses += 1 if tag != 'NN' else 0
+                    unknown_words += 1
 
-        ## total error
-        total_error = (training_misses + test_misses) / (training_words + test_words)
+        # total error
+        total_error = (known_words_misses + unknown_words_misses) / \
+                      (known_words + unknown_words)
 
-
-        return training_misses / training_words, test_misses / test_words, total_error
+        return known_words_misses / known_words, unknown_words_misses / unknown_words, \
+               total_error
 
     def r(self,k, words, tags):
         mult = 1
@@ -197,8 +209,9 @@ def main():
     # probability of p(tag|word)
     # bc.get_list_most_suitable_tag_word()
 
-    bc.print_training_tag_word_dict()
-    bc.print_training_word_tag_dict()
+    print(bc.calculate_errors())
+
+    bc.print_tags_count()
 
     print(bc.emission('Nothing', 'PN-HL'))
 
