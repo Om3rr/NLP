@@ -132,16 +132,13 @@ class BrownCorpus(object):
         """
         # known words error rate
         known_words_misses, known_words = 0,0
-        for sentence in self.training_set:
-            for word, tag in sentence:
-                known_words_misses += 1 if tag != self.get_max_tag(word) else 0
-                known_words += 1
-
-        # unknown words error rate
         unknown_words_misses, unknown_words = 0, 0
-        for sentence in self.test_set:
+        for sentence in self.test_set + self.training_set:
             for word, tag in sentence:
-                if word in self.unknown_words:
+                if word in self.training_set_word_tag:
+                    known_words_misses += 1 if tag != self.get_max_tag(word) else 0
+                    known_words += 1
+                else:
                     unknown_words_misses += 1 if tag != 'NN' else 0
                     unknown_words += 1
 
@@ -204,19 +201,12 @@ def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
     bc = BrownCorpus(PERCENTAGE)
-    print(bc.viterbi("I love to run"))
-
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_suitable_tag_word()
 
-    print(bc.calculate_errors())
 
-    bc.print_tags_count()
-
-    print(bc.emission('Nothing', 'PN-HL'))
-
-    print(bc.emission_add_1_smoothing('Nothing', 'PN-HL'))
+    print("Known err: %s\nUnknown err: %s\nTotal err: %s"%bc.calculate_errors())
 
 
 main()
