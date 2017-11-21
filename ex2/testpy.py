@@ -1,2 +1,2 @@
-from nltk.corpus import brown
-# constants
+import nltk
+nltk.download('brown')

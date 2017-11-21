@@ -158,7 +158,7 @@ class BrownCorpus(object):
         _,last_tag = max([(self.pi(words, len(words) - 1, w)[0] * self.transition(w, 'STOP') , w)
                           for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])
         tags.append(last_tag)
-        for idx in range(len(words) - 1,1,-1):
+        for idx in range(len(words)-1,1,-1):
             last_tag = self.pi(words, idx, last_tag)
             tags.append(last_tag[1])
 
@@ -170,6 +170,7 @@ def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
     bc = BrownCorpus(PERCENTAGE)
+    print(bc.viterbi("I love to run"))
 
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
