@@ -19,6 +19,7 @@ class BrownCorpus(object):
         self.test_set = brown_news_tagged[-training_set_size:]
         self.training_set = brown_news_tagged[:brown_news_tagged_size - training_set_size]
 
+
         self.words_count = {}
         self.tags_count = {}
         self.max_tags = {}
@@ -27,9 +28,14 @@ class BrownCorpus(object):
         self.test_words = set()
         self.unknown_words = set()
 
+        self.tags = set()
+
         for sentence in self.training_set:
             for word, tag in sentence:
                 self.known_words.add(word)
+                self.tags.add(tag)
+
+
 
         for sentence in self.test_set:
             for word, tag in sentence:
@@ -38,6 +44,7 @@ class BrownCorpus(object):
         # set of unknown words = test words Minus known words
         self.unknown_words = self.test_words - self.known_words
 
+        print(self.training_set)
         self.tag_tag_counts_dict = {}
 
         # initialize the dictionary training_set_word_tag such that for each tuple
@@ -82,7 +89,7 @@ class BrownCorpus(object):
                 self.tag_tag_counts_dict[prev_tag][tag] += 1
 
         self.viterbiTable = {}
-
+        self.prob = {}
     def get_max_tag(self, word):
         """
         :param word: word to check for the most common tag.
@@ -97,8 +104,12 @@ class BrownCorpus(object):
                 tags_pressed[0][TAG]
         return self.max_tags[word]
 
-
     def emission(self, word, tag):
+        """
+        :param word:
+        :param tag:
+        :return: p(word | tag) = count(tag, word) / count(tag)
+        """
         # this function will calculate p (word | tag)
         if tag not in self.training_set_tag_word:
             return 0
@@ -118,6 +129,11 @@ class BrownCorpus(object):
                (self.tags_count[tag] + num_of_tags)
 
     def transition(self, prev_tag, tag):
+        """
+        :param prev_tag:
+        :param tag:
+        :return: count(w, v) / count(w) = q(v|w)
+        """
         if prev_tag not in self.tag_tag_counts_dict:
             return 0
         if tag not in self.tag_tag_counts_dict[prev_tag]:
@@ -157,7 +173,7 @@ class BrownCorpus(object):
         return mult
 
     def pi(self,words, k, v):
-        if k == 0:
+        if k == 0 and v == '*':
             return 1, '*'
         if (k,v) in self.viterbiTable:
             return self.viterbiTable[(k,v)]
@@ -168,23 +184,121 @@ class BrownCorpus(object):
         self.viterbiTable[(k,v)] = (w_freq, w)
         return w_freq, w
 
-    def viterbi(self, words):
+    def viterbi(self, stentence):
         tags = []
-        words = ["*"] + words.split(" ")
-        _,last_tag = max([(self.pi(words, len(words) - 1, w)[0] * self.transition(w, 'STOP') , w)
+        stentence = ["*"] + stentence.split(" ")
+        _,last_tag = max([(self.pi(stentence, len(stentence) - 1, w)[0] * self.transition(w, 'STOP') , w)
                           for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])
         tags.append(last_tag)
-        for idx in range(len(words)-1,1,-1):
-            last_tag = self.pi(words, idx, last_tag)
+        for idx in range(len(stentence)-1, 1, -1):
+            last_tag = self.pi(stentence, idx, last_tag)
             tags.append(last_tag[1])
 
         return tags[::-1]
+
+
+
+
+    def viterbi2(self, sentence):
+        """
+
+        Viterbi method gets a sentence (x1,x2,...,xn)
+        :param self:
+        :param sentence: x1, x2, x3 ...., xn
+        :return:
+        1. The max probability of tags to this sentence
+        2. The tags themselves with the highest probabilities to this sentence
+        """
+        def find_set(k):
+            """
+            This Method gives us Sk = optional tags at position k
+            :param k: the index
+            :return: the optional tags at this position
+            """
+            # for any k in the length of the sentence we will return S= all tags
+            # for k == 0 we will return '*'
+            if k in range(1, len(sentence)+1):
+                return self.tags
+            elif k == 0:
+                return {'*'}
+
+        def pi2(k, v):
+            """
+            :param k: the (word) position in the sentence
+            :param v: the last tag in the kth position
+            :return: max probability of tags sequence ending in tag v at position k
+            """
+            prob = {}
+            # initialization set pi(0,*) = 1
+            if k == 0 and v == '*':
+                return 1., '*'
+
+            else:
+                # w belongs to S_k-1
+                for w in find_set(k-1):
+                    # pi(k-1,w) * q(v|w) * e(x_k|v)
+                    prev = pi2(k-1, w)[0]
+                    transition = self.transition(v, w)
+                    emission = self.emission(sentence[k-1].lower(), v)
+                    probability = prev * transition * emission
+                    prob[tuple((w, v))] = probability
+                # max according to the probabilities
+                max_tuple = max(prob.items(), key=lambda x: x[1])
+                # max_tuple[1] = prob1
+                # max_tuple[0][0] = the word of the first {(w,v), prob1} = w1
+                return max_tuple[1], max_tuple[0][0]
+
+        # split the sentence according to spaces
+        sentence = sentence.split(" ")
+        sentence = ["START"] + sentence
+        n = len(sentence)
+        tags = {}
+        bp = {}
+
+        # for k=1,2...,n
+        for k in range(1, n+1):
+            prob = {}
+            # v belongs to S_k for k belongs to {1,2,3...,k}
+            for v in find_set(k):
+                value, w = pi2(k, v)
+                if k == n:
+                    value *= self.transition("STOP", v)
+                prob[tuple((k, v))] = value
+                bp[tuple((k, v))] = w
+            max_tuple = max(prob.items(), key=lambda x: x[1])
+            # bp (k, v)= tag w
+            bp[tuple((k, max_tuple[0][-1]))] = max_tuple[0][1]
+        tags[n] = max_tuple[0][1]
+        print(sorted(list(bp.items()),
+                                  key=lambda x: x[1], reverse=True))
+        # for k = (n-1)....1
+        # tags[k] = bp(k+1, tags[k+1])
+
+        for k in range(n-1, 0, -1):
+            print(k)
+            tags[k] = bp[tuple((k+1, tags[k+1]))]
+
+        # return tag_list = tags[1],....tags[n]
+        tag_list = []
+        n = len(tags)
+        for i in range(1, n + 1):
+            tag_list.append(tags[i])
+        print(max_tuple)
+        return tag_list
 
     def print_training_tag_word_dict(self):
         print(self.training_set_tag_word)
 
     def print_training_word_tag_dict(self):
         print(self.training_set_word_tag)
+
+    def print_tag_tag_counts_dict(self):
+        print(self.tag_tag_counts_dict)
+        print(len(self.tag_tag_counts_dict))
+
+    def print_tags(self):
+        print(self.tags)
+        print(len(self.tags))
 
     def print_tags_count(self):
 
@@ -206,7 +320,12 @@ def main():
     # bc.get_list_most_suitable_tag_word()
 
 
-    print("Known err: %s\nUnknown err: %s\nTotal err: %s"%bc.calculate_errors())
+
+    print(bc.viterbi2("the dog"))
+
+
+
+    #print("Known err: %s\nUnknown err: %s\nTotal err: %s"%bc.calculate_errors())
 
 
 main()
