@@ -24,6 +24,8 @@ class BrownCorpus(object):
         self.tags_count = {}
         self.max_tags = {}
 
+        self.viterbi_table = {}
+        self.bp_table = {}
         self.known_words = set()
         self.test_words = set()
         self.unknown_words = set()
@@ -44,7 +46,6 @@ class BrownCorpus(object):
         # set of unknown words = test words Minus known words
         self.unknown_words = self.test_words - self.known_words
 
-        print(self.training_set)
         self.tag_tag_counts_dict = {}
 
         # initialize the dictionary training_set_word_tag such that for each tuple
@@ -111,7 +112,7 @@ class BrownCorpus(object):
         :return: p(word | tag) = count(tag, word) / count(tag)
         """
         # this function will calculate p (word | tag)
-        if tag not in self.training_set_tag_word:
+        if tag not in self.tags:
             return 0
         if word not in self.training_set_tag_word[tag]:
             return 0
@@ -120,7 +121,7 @@ class BrownCorpus(object):
 
     def emission_add_1_smoothing(self, word, tag):
         # this function will calculate p add_1(word | tag)
-        if tag not in self.training_set_tag_word:
+        if tag not in self.tags:
             return 0
         if word not in self.training_set_tag_word[tag]:
             return 0
@@ -134,9 +135,9 @@ class BrownCorpus(object):
         :param tag:
         :return: count(w, v) / count(w) = q(v|w)
         """
-        if prev_tag not in self.tag_tag_counts_dict:
+        if prev_tag not in self.tags:
             return 0
-        if tag not in self.tag_tag_counts_dict[prev_tag]:
+        if tag not in self.tags:
             return 0
         return self.tag_tag_counts_dict[prev_tag][tag] / \
                self.tags_count[prev_tag]
@@ -228,7 +229,7 @@ class BrownCorpus(object):
             :param v: the last tag in the kth position
             :return: max probability of tags sequence ending in tag v at position k
             """
-            prob = {}
+            pi = {}
             # initialization set pi(0,*) = 1
             if k == 0 and v == '*':
                 return 1., '*'
@@ -241,9 +242,9 @@ class BrownCorpus(object):
                     transition = self.transition(v, w)
                     emission = self.emission(sentence[k-1].lower(), v)
                     probability = prev * transition * emission
-                    prob[tuple((w, v))] = probability
+                    pi[tuple((w, v))] = probability
                 # max according to the probabilities
-                max_tuple = max(prob.items(), key=lambda x: x[1])
+                max_tuple = max(pi.items(), key=lambda x: x[1])
                 # max_tuple[1] = prob1
                 # max_tuple[0][0] = the word of the first {(w,v), prob1} = w1
                 return max_tuple[1], max_tuple[0][0]
@@ -257,15 +258,15 @@ class BrownCorpus(object):
 
         # for k=1,2...,n
         for k in range(1, n+1):
-            prob = {}
+            pi = {}
             # v belongs to S_k for k belongs to {1,2,3...,k}
             for v in find_set(k):
                 value, w = pi2(k, v)
                 if k == n:
                     value *= self.transition("STOP", v)
-                prob[tuple((k, v))] = value
+                pi[tuple((k, v))] = value
                 bp[tuple((k, v))] = w
-            max_tuple = max(prob.items(), key=lambda x: x[1])
+            max_tuple = max(pi.items(), key=lambda x: x[1])
             # bp (k, v)= tag w
             bp[tuple((k, max_tuple[0][-1]))] = max_tuple[0][1]
         tags[n] = max_tuple[0][1]
@@ -285,6 +286,62 @@ class BrownCorpus(object):
             tag_list.append(tags[i])
         print(max_tuple)
         return tag_list
+
+    def compute_max_prob(self, v, k, sentence):
+        curr_max = 0
+        curr_tag = ""
+        for w in self.tags:
+            viterbi = self.viterbi_table[(k, w)]
+            emission = self.emission(sentence[k+1], v)
+            transition = self.transition(w, v)
+            result = viterbi * emission * transition
+            if result > curr_max:
+                curr_max = result
+                curr_tag = w
+
+        return curr_max, curr_tag
+
+    def compute_maximize_tag_first_row(self, sentence):
+        curr_max = 0
+        tag = ""
+        for w in self.tags:
+            prob = self.viterbi_table[(len(sentence)-1, w)] * self.transition(w, "STOP")
+            if prob > curr_max:
+                curr_max = prob
+                tag = w
+        return tag
+
+    def viterbi3(self, sentence):
+        # split the sentence according to spaces
+        sentence = sentence.split(" ")
+        sentence = ["START"] + sentence
+        n = len(sentence)
+
+        # initialization of row 0 in viterbi table
+        # initialization of row 0 in bp table
+
+        for tag in self.tags:
+            self.viterbi_table[(0, tag)] = 1
+            self.bp_table[(0, "~" + tag + "~")] = "START"
+
+        for k in range(1, n):
+            for curr_tag in self.tags:
+                prob, maximize_tag = self.compute_max_prob(curr_tag, k-1, sentence)
+                self.viterbi_table[(k, curr_tag)] = prob
+                self.bp_table[(k, curr_tag)] = maximize_tag
+
+        for k, v in self.viterbi_table.items():
+            if k[0] == 3:
+                print(k, v)
+
+        tags_of_sentence = [''] * n
+        print(self.compute_maximize_tag_first_row(sentence))
+        tags_of_sentence[-1] = self.compute_maximize_tag_first_row(sentence)
+        for k in range(n-2, 0, -1):
+            # print(tags_of_sentence[k+1])
+            # print(self.bp_table[(k+1, tags_of_sentence[k+1])])
+            pass
+        return 0
 
     def print_training_tag_word_dict(self):
         print(self.training_set_tag_word)
@@ -311,6 +368,8 @@ class BrownCorpus(object):
 
 
 
+
+
 def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
@@ -320,8 +379,8 @@ def main():
     # bc.get_list_most_suitable_tag_word()
 
 
-
-    print(bc.viterbi2("the dog"))
+    sen = "But Holmes was rejected again '' on the basis of his record and interview '' ."
+    print(bc.viterbi3(sen))
 
 
 
