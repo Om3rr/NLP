@@ -91,6 +91,7 @@ class BrownCorpus(object):
 
         self.viterbiTable = {}
         self.prob = {}
+
     def get_max_tag(self, word):
         """
         :param word: word to check for the most common tag.
@@ -112,11 +113,10 @@ class BrownCorpus(object):
         :return: p(word | tag) = count(tag, word) / count(tag)
         """
         # this function will calculate p (word | tag)
-        if tag not in self.tags:
+        if tag not in self.training_set_tag_word:
             return 0
         if word not in self.training_set_tag_word[tag]:
             return 0
-
         return self.training_set_tag_word[tag][word] / self.tags_count[tag]
 
     def emission_add_1_smoothing(self, word, tag):
@@ -135,9 +135,9 @@ class BrownCorpus(object):
         :param tag:
         :return: count(w, v) / count(w) = q(v|w)
         """
-        if prev_tag not in self.tags:
+        if prev_tag not in self.tag_tag_counts_dict:
             return 0
-        if tag not in self.tags:
+        if tag not in self.tag_tag_counts_dict[prev_tag]:
             return 0
         return self.tag_tag_counts_dict[prev_tag][tag] / \
                self.tags_count[prev_tag]
@@ -289,13 +289,13 @@ class BrownCorpus(object):
 
     def compute_max_prob(self, v, k, sentence):
         curr_max = 0
-        curr_tag = ""
+        curr_tag = "NN"
         for w in self.tags:
             viterbi = self.viterbi_table[(k, w)]
             emission = self.emission(sentence[k+1], v)
             transition = self.transition(w, v)
             result = viterbi * emission * transition
-            if result > curr_max:
+            if result >= curr_max:
                 curr_max = result
                 curr_tag = w
 
@@ -303,10 +303,10 @@ class BrownCorpus(object):
 
     def compute_maximize_tag_first_row(self, sentence):
         curr_max = 0
-        tag = ""
+        tag = "NN"
         for w in self.tags:
             prob = self.viterbi_table[(len(sentence)-1, w)] * self.transition(w, "STOP")
-            if prob > curr_max:
+            if prob >= curr_max:
                 curr_max = prob
                 tag = w
         return tag
@@ -322,7 +322,8 @@ class BrownCorpus(object):
 
         for tag in self.tags:
             self.viterbi_table[(0, tag)] = 1
-            self.bp_table[(0, "~" + tag + "~")] = "START"
+
+        self.bp_table[(0, "START")] = "START"
 
         for k in range(1, n):
             for curr_tag in self.tags:
@@ -330,18 +331,19 @@ class BrownCorpus(object):
                 self.viterbi_table[(k, curr_tag)] = prob
                 self.bp_table[(k, curr_tag)] = maximize_tag
 
-        for k, v in self.viterbi_table.items():
-            if k[0] == 3:
-                print(k, v)
-
         tags_of_sentence = [''] * n
-        print(self.compute_maximize_tag_first_row(sentence))
         tags_of_sentence[-1] = self.compute_maximize_tag_first_row(sentence)
+
+
+        print("viterbi")
+        print(sorted(list(self.viterbi_table.items()),
+                                  key=lambda x: x[0][0], reverse=True))
+        print("bp")
+        print(sorted(list(self.bp_table.items()),
+                                  key=lambda x: x[0][0], reverse=True))
         for k in range(n-2, 0, -1):
-            # print(tags_of_sentence[k+1])
-            # print(self.bp_table[(k+1, tags_of_sentence[k+1])])
-            pass
-        return 0
+            tags_of_sentence[k] = self.bp_table[(k+1, tags_of_sentence[k+1])]
+        return tags_of_sentence[1:]
 
     def print_training_tag_word_dict(self):
         print(self.training_set_tag_word)
@@ -377,7 +379,6 @@ def main():
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_suitable_tag_word()
-
 
     sen = "But Holmes was rejected again '' on the basis of his record and interview '' ."
     print(bc.viterbi3(sen))
