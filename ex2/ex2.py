@@ -130,6 +130,8 @@ class BrownCorpus(object):
         :return: p(word | tag) = count(tag, word) / count(tag)
         """
         # this function will calculate p (word | tag)
+        if(word == "START"):
+            return 1
         if tag not in self.training_set_tag_word:
             return 0
         if word not in self.training_set_tag_word[tag]:
@@ -287,13 +289,13 @@ class BrownCorpus(object):
             # bp (k, v)= tag w
             bp[tuple((k, max_tuple[0][-1]))] = max_tuple[0][1]
         tags[n] = max_tuple[0][1]
-        print(sorted(list(bp.items()),
-                                  key=lambda x: x[1], reverse=True))
+        # print(sorted(list(bp.items()),
+        #                           key=lambda x: x[1], reverse=True))
         # for k = (n-1)....1
         # tags[k] = bp(k+1, tags[k+1])
 
         for k in range(n-1, 0, -1):
-            print(k)
+            # print(k)
             tags[k] = bp[tuple((k+1, tags[k+1]))]
 
         # return tag_list = tags[1],....tags[n]
@@ -301,7 +303,6 @@ class BrownCorpus(object):
         n = len(tags)
         for i in range(1, n + 1):
             tag_list.append(tags[i])
-        print(max_tuple)
         return tag_list
 
     def compute_max_prob(self, v, k, sentence):
@@ -309,14 +310,18 @@ class BrownCorpus(object):
         curr_tag = "NN"
         for w in self.tags:
             viterbi = self.viterbi_table[(k, w)]
-            emission = self.emission(sentence[k+1], v)
+            emission = self.emission(sentence[k+1].lower(), v)
             transition = self.transition(w, v)
+            # if(emission > 0):
+            #     print(self.tag_tag_counts_dict[w])
+            # if (transition > 0):
+            #     print(self.training_set_word_tag[sentence[k + 1]])
             result = viterbi * emission * transition
             if result >= curr_max:
                 curr_max = result
                 curr_tag = w
 
-        return curr_max, curr_tag
+        return curr_max*10, curr_tag
 
     def compute_maximize_tag_first_row(self, sentence):
         curr_max = 0
@@ -329,6 +334,8 @@ class BrownCorpus(object):
         return tag
 
     def viterbi3(self, sentence):
+        self.viterbiTable = {}
+        self.bp_table = {}
         # split the sentence according to spaces
         sentence = sentence.split(" ")
         sentence = ["START"] + sentence
@@ -345,6 +352,8 @@ class BrownCorpus(object):
         for k in range(1, n):
             for curr_tag in self.tags:
                 prob, maximize_tag = self.compute_max_prob(curr_tag, k-1, sentence)
+                # if(prob > 0):
+                    # print(prob, maximize_tag)
                 self.viterbi_table[(k, curr_tag)] = prob
                 self.bp_table[(k, curr_tag)] = maximize_tag
 
@@ -352,12 +361,12 @@ class BrownCorpus(object):
         tags_of_sentence[-1] = self.compute_maximize_tag_first_row(sentence)
 
 
-        print("viterbi")
-        print(sorted(list(self.viterbi_table.items()),
-                                  key=lambda x: x[0][0], reverse=True))
-        print("bp")
-        print(sorted(list(self.bp_table.items()),
-                                  key=lambda x: x[0][0], reverse=True))
+        # print("viterbi")
+        # print(sorted(list(self.viterbi_table.items()),
+        #                           key=lambda x: x[0][0], reverse=True))
+        # print("bp")
+        # print(sorted(list(self.bp_table.items()),
+        #                           key=lambda x: x[0][0], reverse=True))
         for k in range(n-2, 0, -1):
             tags_of_sentence[k] = self.bp_table[(k+1, tags_of_sentence[k+1])]
         return tags_of_sentence[1:]
@@ -407,10 +416,17 @@ def main():
     # probability of p(tag|word)
     # bc.get_list_most_suitable_tag_word()
 
-    sen = "But Holmes was rejected again '' on the basis of his record and interview '' ."
-    print("--->")
-    bc.eval_pseudo_tag("Hello")
-    # print(bc.viterbi3(sen))
+    sen = "The jury said it did find that many of ."
+    tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
+    for sent in bc.training_set[1:10]:
+        sent = sent[0:8]
+        sen = ' '.join([x[0] for x in sent])
+        print('--------------------------')
+        print(' '.join(bc.viterbi3(sen)))
+        print(' '.join([x[1] for x in sent]))
+        print(sen)
+    # print("--->")
+    # bc.eval_pseudo_tag("Hello")
 
 
 
