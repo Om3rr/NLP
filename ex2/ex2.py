@@ -1,4 +1,5 @@
 from nltk.corpus import brown
+import re
 # constants
 PERCENTAGE = 10
 TAG = 0
@@ -6,6 +7,22 @@ COUNTS = 1
 FREQ = 1
 TUPLE_TAG = 1
 TOTAL = 'total'
+
+
+PSEUDOS = [
+    {'re' : re.compile('^\d{2}$'), 'text' : 'twoDigitNum'},
+    {'re' : re.compile('^\d{4}$'), 'text' : 'fourDigitNum'},
+    {'re' : re.compile('^((\d+[a-zA-Z]+)|([a-zA-Z]+\d+))[a-zA-Z0-9]*$'), 'text' : 'containsDigitAndAlpha'},
+    {'re' : re.compile('^((\d+\-)|(\-\d+))\d*\-*$'), 'text' : 'containsDigitAndDash'},
+    {'re' : re.compile("^((\d+[\\\/])|([\\\/]\d+))[\\\/0-9]*$"), 'text' : 'containsDigitAndSlash'},
+    {'re' : re.compile("^((\d+\,)|(\,\d+))[\,0-9]*$"), 'text' : 'containsDigitAndComma'},
+    {'re' : re.compile("^((\d+\.)|(\.\d+))[\.0-9]*$"), 'text' : 'containsDigitAndPeriod'},
+    {'re' : re.compile("^\d+$"), 'text' : 'otherNum'},
+    {'re' : re.compile("^[A-Z]+$"), 'text' : 'allCaps'},
+    {'re' : re.compile("^[A-Z]\.$"), 'text' : 'capPeriod'},
+    {'re' : re.compile("^[A-Z]\w+$"), 'text' : 'capWord'},
+    {'re' : re.compile("^[a-z]+$"), 'text' : 'lowerCase'}
+]
 
 
 class BrownCorpus(object):
@@ -369,6 +386,16 @@ class BrownCorpus(object):
                                   key=lambda x: x[1], reverse=True))
 
 
+    def eval_pseudo_tag(self,word):
+        for pseudoGroup in PSEUDOS:
+            if(pseudoGroup['re'].match(word)):
+                return pseudoGroup['text']
+        return 'other'
+
+
+
+
+
 
 
 
@@ -381,7 +408,9 @@ def main():
     # bc.get_list_most_suitable_tag_word()
 
     sen = "But Holmes was rejected again '' on the basis of his record and interview '' ."
-    print(bc.viterbi3(sen))
+    print("--->")
+    bc.eval_pseudo_tag("Hello")
+    # print(bc.viterbi3(sen))
 
 
 
