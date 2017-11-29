@@ -185,125 +185,8 @@ class BrownCorpus(object):
         return known_words_misses / known_words, unknown_words_misses / unknown_words, \
                total_error
 
-    def r(self,k, words, tags):
-        mult = 1
-        for idx in range(1,k):
-            mult *= self.transition(tags[idx-1], tags[idx])
-            mult *= self.emission(words[idx], tags[idx])
-        return mult
-
-    def pi(self,words, k, v):
-        if k == 0 and v == '*':
-            return 1, '*'
-        if (k,v) in self.viterbiTable:
-            return self.viterbiTable[(k,v)]
-        w_freq, w = max([(self.pi(words, k-1,w)[0] * self.transition(v,w) * self.emission(words[k], v)
-                          , w)
-                         for w in self.tag_tag_counts_dict],
-                    key=lambda x:x[0])
-        self.viterbiTable[(k,v)] = (w_freq, w)
-        return w_freq, w
-
-    def viterbi(self, stentence):
-        tags = []
-        stentence = ["*"] + stentence.split(" ")
-        _,last_tag = max([(self.pi(stentence, len(stentence) - 1, w)[0] * self.transition(w, 'STOP') , w)
-                          for w in self.tag_tag_counts_dict.keys()], key=lambda x:x[0])
-        tags.append(last_tag)
-        for idx in range(len(stentence)-1, 1, -1):
-            last_tag = self.pi(stentence, idx, last_tag)
-            tags.append(last_tag[1])
-
-        return tags[::-1]
 
 
-
-
-    def viterbi2(self, sentence):
-        """
-
-        Viterbi method gets a sentence (x1,x2,...,xn)
-        :param self:
-        :param sentence: x1, x2, x3 ...., xn
-        :return:
-        1. The max probability of tags to this sentence
-        2. The tags themselves with the highest probabilities to this sentence
-        """
-        def find_set(k):
-            """
-            This Method gives us Sk = optional tags at position k
-            :param k: the index
-            :return: the optional tags at this position
-            """
-            # for any k in the length of the sentence we will return S= all tags
-            # for k == 0 we will return '*'
-            if k in range(1, len(sentence)+1):
-                return self.tags
-            elif k == 0:
-                return {'*'}
-
-        def pi2(k, v):
-            """
-            :param k: the (word) position in the sentence
-            :param v: the last tag in the kth position
-            :return: max probability of tags sequence ending in tag v at position k
-            """
-            pi = {}
-            # initialization set pi(0,*) = 1
-            if k == 0 and v == '*':
-                return 1., '*'
-
-            else:
-                # w belongs to S_k-1
-                for w in find_set(k-1):
-                    # pi(k-1,w) * q(v|w) * e(x_k|v)
-                    prev = pi2(k-1, w)[0]
-                    transition = self.transition(v, w)
-                    emission = self.emission(sentence[k-1].lower(), v)
-                    probability = prev * transition * emission
-                    pi[tuple((w, v))] = probability
-                # max according to the probabilities
-                max_tuple = max(pi.items(), key=lambda x: x[1])
-                # max_tuple[1] = prob1
-                # max_tuple[0][0] = the word of the first {(w,v), prob1} = w1
-                return max_tuple[1], max_tuple[0][0]
-
-        # split the sentence according to spaces
-        sentence = sentence.split(" ")
-        sentence = ["START"] + sentence
-        n = len(sentence)
-        tags = {}
-        bp = {}
-
-        # for k=1,2...,n
-        for k in range(1, n+1):
-            pi = {}
-            # v belongs to S_k for k belongs to {1,2,3...,k}
-            for v in find_set(k):
-                value, w = pi2(k, v)
-                if k == n:
-                    value *= self.transition("STOP", v)
-                pi[tuple((k, v))] = value
-                bp[tuple((k, v))] = w
-            max_tuple = max(pi.items(), key=lambda x: x[1])
-            # bp (k, v)= tag w
-            bp[tuple((k, max_tuple[0][-1]))] = max_tuple[0][1]
-        tags[n] = max_tuple[0][1]
-        # print(sorted(list(bp.items()),
-        #                           key=lambda x: x[1], reverse=True))
-        # for k = (n-1)....1
-        # tags[k] = bp(k+1, tags[k+1])
-
-        for k in range(n-1, 0, -1):
-            # print(k)
-            tags[k] = bp[tuple((k+1, tags[k+1]))]
-
-        # return tag_list = tags[1],....tags[n]
-        tag_list = []
-        n = len(tags)
-        for i in range(1, n + 1):
-            tag_list.append(tags[i])
-        return tag_list
 
     def compute_max_prob(self, v, k, sentence):
         curr_max = 0
@@ -333,7 +216,7 @@ class BrownCorpus(object):
                 tag = w
         return tag
 
-    def viterbi3(self, sentence):
+    def viterbi(self, sentence):
         self.viterbiTable = {}
         self.bp_table = {}
         # split the sentence according to spaces
@@ -416,15 +299,16 @@ def main():
     # probability of p(tag|word)
     # bc.get_list_most_suitable_tag_word()
 
-    sen = "The jury said it did find that many of ."
-    tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
-    for sent in bc.training_set[1:10]:
-        sent = sent[0:8]
-        sen = ' '.join([x[0] for x in sent])
-        print('--------------------------')
-        print(' '.join(bc.viterbi3(sen)))
-        print(' '.join([x[1] for x in sent]))
-        print(sen)
+    print(bc.viterbi("But Holmes was rejected again '' on the basis of his record and interview '' ."))
+    # sen = "The jury said it did find that many of ."
+    # tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
+    # for sent in bc.traininxg_set[1:10]:
+    #     sent = sent[0:8]
+    #     sen = ' '.join([x[0] for x in sent])
+    #     print('--------------------------')
+    #     print(' '.join(bc.viterbi(sen)))
+    #     print(' '.join([x[1] for x in sent]))
+    #     print(sen)
     # print("--->")
     # bc.eval_pseudo_tag("Hello")
 
