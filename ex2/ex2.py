@@ -311,17 +311,6 @@ def main():
     # probability of p(tag|word)
     # bc.get_list_most_s
     print(bc.viterbi("But Holmes was rejected again '' on the basis of his record and interview '' ."))
-    # sen = "The jury said it did find that many of ."
-    # tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
-    # for sent in bc.traininxg_set[1:10]:
-    #     sent = sent[0:8]
-    #     sen = ' '.join([x[0] for x in sent])
-    #     print('--------------------------')
-    #     print(' '.join(bc.viterbi(sen)))
-    #     print(' '.join([x[1] for x in sent]))
-    #     print(sen)
-    sen = "The jury said it did find that many of ."
-    tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
     for sent in bc.test_set[1:150]:
         sent = sent[0:]
         sen = ' '.join([x[0] for x in sent])
