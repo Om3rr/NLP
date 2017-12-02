@@ -28,7 +28,7 @@ PSEUDOS = [
 
 class BrownCorpus(object):
 
-    def __init__(self, percentage, use_pseudo = False):
+    def __init__(self, percentage, specialPower = ''):
         # extract the last PERCENTAGE from brown corpus to be test set
         # the first 100 - PERCENTAGE from brown corpus to be the training set
         brown_news_tagged = brown.tagged_sents(categories='news')
@@ -133,9 +133,18 @@ class BrownCorpus(object):
         self.viterbiTable = {}
         self.prob = {}
 
-
-        self.emit = self.emission_pseudos
-        self.transit = self.transition
+        if(specialPower == 'PSEUDO'):
+            self.emit = self.emission_pseudos
+            self.transit = self.transition
+        elif(specialPower == 'PLUS_ONE'):
+            self.emit = self.emission_add_1_smoothing
+            self.transit = self.transition_add_1_smoothing
+        elif(specialPower == ''):
+            self.emit = self.emission
+            self.transit = self.transition
+        else:
+            print("Cant find this special power please try ['PSEUDO', 'PLUS_ONE', ''] :D")
+            raise ValueError
 
     def get_max_tag(self, word):
         """
@@ -353,7 +362,7 @@ class BrownCorpus(object):
 def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
-    bc = BrownCorpus(PERCENTAGE, True)
+    bc = BrownCorpus(PERCENTAGE, 'PSEUDO')
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_s
