@@ -11,18 +11,23 @@ TOTAL = 'total'
 
 
 PSEUDOS = [
-    {'re' : re.compile('^\d{2}$'), 'text' : 'twoDigitNum'},
-    {'re' : re.compile('^\d{4}$'), 'text' : 'fourDigitNum'},
-    {'re' : re.compile('^((\d+[a-zA-Z]+)|([a-zA-Z]+\d+))[a-zA-Z0-9]*$'), 'text' : 'containsDigitAndAlpha'},
-    {'re' : re.compile('^((\d+\-)|(\-\d+))\d*\-*$'), 'text' : 'containsDigitAndDash'},
-    {'re' : re.compile("^((\d+[\\\/])|([\\\/]\d+))[\\\/0-9]*$"), 'text' : 'containsDigitAndSlash'},
-    {'re' : re.compile("^((\d+\,)|(\,\d+))[\,0-9]*$"), 'text' : 'containsDigitAndComma'},
-    {'re' : re.compile("^((\d+\.)|(\.\d+))[\.0-9]*$"), 'text' : 'containsDigitAndPeriod'},
-    {'re' : re.compile("^\d+$"), 'text' : 'otherNum'},
-    {'re' : re.compile("^[A-Z]+$"), 'text' : 'allCaps'},
-    {'re' : re.compile("^[A-Z]\.$"), 'text' : 'capPeriod'},
-    {'re' : re.compile("^[A-Z]\w+$"), 'text' : 'capWord'},
-    {'re' : re.compile("^[a-z]+$"), 'text' : 'lowerCase'}
+    {'re': re.compile('^\d{2}$'), 'text': 'twoDigitNum'},
+    {'re': re.compile('^\d{4}$'), 'text': 'fourDigitNum'},
+    {'re': re.compile('^((\d+[a-zA-Z]+)|([a-zA-Z]+\d+))[a-zA-Z0-9]*$'),
+     'text': 'containsDigitAndAlpha'},
+    {'re': re.compile('^((\d+\-)|(\-\d+))\d*\-*$'),
+     'text': 'containsDigitAndDash'},
+    {'re': re.compile("^((\d+[\\\/])|([\\\/]\d+))[\\\/0-9]*$"),
+     'text': 'containsDigitAndSlash'},
+    {'re': re.compile("^((\d+\,)|(\,\d+))[\,0-9]*$"),
+     'text': 'containsDigitAndComma'},
+    {'re': re.compile("^((\d+\.)|(\.\d+))[\.0-9]*$"),
+     'text': 'containsDigitAndPeriod'},
+    {'re': re.compile("^\d+$"), 'text': 'otherNum'},
+    {'re': re.compile("^[A-Z]+$"), 'text': 'allCaps'},
+    {'re': re.compile("^[A-Z]\.$"), 'text': 'capPeriod'},
+    {'re': re.compile("^[A-Z]\w+$"), 'text': 'capWord'},
+    {'re': re.compile("^[a-z]+$"), 'text': 'lowerCase'}
 ]
 
 
@@ -220,6 +225,28 @@ class BrownCorpus(object):
             return 1 / self.tags_count[prev_tag] + len(self.tags_count)
         return (self.tag_tag_counts_dict[prev_tag][tag] + 1)/ (self.tags_count[prev_tag] + len(self.tags_count))
 
+    def calculate_errors_test_set_viterbi(self):
+        count_wrong = 0
+        count_total = 0
+        count_sentences = 0
+        for sentence in self.test_set:
+            count_sentences += 1
+            words = ""
+            tags = []
+            for word, tag in sentence:
+                words += word + " "
+                tags.append(tag)
+            viterbi_tags = self.viterbi(words)
+            for i in range(len(viterbi_tags)):
+                count_total += 1
+                if not tags[i] == viterbi_tags[i]:
+                    count_wrong += 1
+            print(count_sentences)
+            print(count_wrong / count_total)
+            print(tags)
+            print(viterbi_tags)
+        return count_wrong / count_total
+
     def calculate_errors(self):
         """
         this function calculate the training, test and total model errors.
@@ -281,8 +308,8 @@ class BrownCorpus(object):
         # split the sentence according to spaces
         sentence = sentence.split(" ")
         sentence = ["START"] + sentence
+        sentence = sentence[:-1]
         n = len(sentence)
-
         # initialization of row 0 in viterbi table
         # initialization of row 0 in bp table
 
@@ -303,12 +330,6 @@ class BrownCorpus(object):
         tags_of_sentence[-1] = self.compute_maximize_tag_first_row(sentence)
 
 
-        # print("viterbi")
-        # print(sorted(list(self.viterbi_table.items()),
-        #                           key=lambda x: x[0][0], reverse=True))
-        # print("bp")
-        # print(sorted(list(self.bp_table.items()),
-        #                           key=lambda x: x[0][0], reverse=True))
         for k in range(n-2, 0, -1):
             tags_of_sentence[k] = self.bp_table[(k+1, tags_of_sentence[k+1])]
         return tags_of_sentence[1:]
@@ -362,18 +383,21 @@ class BrownCorpus(object):
 def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
-    bc = BrownCorpus(PERCENTAGE, 'PSEUDO')
+    bc = BrownCorpus(PERCENTAGE, 'PLUS_ONE')
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_s
-    print(bc.viterbi("But Holmes was rejected again '' on the basis of his record and interview '' ."))
-    for sent in bc.test_set[1:150]:
-        sent = sent[0:]
-        sen = ' '.join([x[0] for x in sent])
-        print('--------------------------')
-        print(' '.join(bc.viterbi(sen)))
-        print(' '.join([x[1] for x in sent]))
-        print(sen)
+    # print(bc.viterbi("But Holmes was rejected again '' on the basis of his record and interview '' ."))
+    # print(bc.viterbi("I want to eat"))
+    print(bc.calculate_errors())
+    print(bc.calculate_errors_test_set_viterbi())
+    # for sent in bc.test_set[1:150]:
+    #     sent = sent[0:]
+    #     sen = ' '.join([x[0] for x in sent])
+    #     print('--------------------------')
+    #     print(' '.join(bc.viterbi(sen)))
+    #     print(' '.join([x[1] for x in sent]))
+    #     print(sen)
     # print("--->")
     # bc.eval_pseudo_tag("Hello")
 
