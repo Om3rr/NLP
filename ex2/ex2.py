@@ -315,7 +315,7 @@ def main():
         sent = sent[0:]
         sen = ' '.join([x[0] for x in sent])
         print('--------------------------')
-        print(' '.join(bc.viterbi3(sen)))
+        print(' '.join(bc.viterbi(sen)))
         print(' '.join([x[1] for x in sent]))
         print(sen)
     # print("--->")
