@@ -8,6 +8,7 @@ COUNTS = 1
 FREQ = 1
 TUPLE_TAG = 1
 TOTAL = 'total'
+NON_ZERO_CONST = 0.000001
 
 
 PSEUDOS = [
@@ -279,18 +280,20 @@ class BrownCorpus(object):
         curr_tag = "NN"
         for w in self.tags:
             viterbi = self.viterbi_table[(k, w)]
+            if viterbi == 0.0:
+                viterbi += NON_ZERO_CONST
             emission = self.emit(sentence[k+1], v)
+            if emission == 0.0:
+                emission += NON_ZERO_CONST
             transition = self.transit(w, v)
-            # if(emission > 0):
-            #     print(self.tag_tag_counts_dict[w])
-            # if (transition > 0):
-            #     print(self.training_set_word_tag[sentence[k + 1]])
+            if transition == 0.0:
+                transition += NON_ZERO_CONST
             result = viterbi * emission * transition
             if result >= curr_max:
                 curr_max = result
                 curr_tag = w
 
-        return curr_max*(10**5), curr_tag
+        return curr_max, curr_tag
 
     def compute_maximize_tag_first_row(self, sentence):
         curr_max = 0
@@ -383,7 +386,7 @@ class BrownCorpus(object):
 def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
-    bc = BrownCorpus(PERCENTAGE, 'PLUS_ONE')
+    bc = BrownCorpus(PERCENTAGE, '')
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_s
@@ -407,4 +410,3 @@ def main():
 
 
 main()
-
