@@ -161,6 +161,18 @@ class BrownCorpus(object):
         return self.tag_tag_counts_dict[prev_tag][tag] / \
                self.tags_count[prev_tag]
 
+    def transition_add_1_smoothing(self, prev_tag, tag):
+        """
+        :param prev_tag:
+        :param tag:
+        :return: count(w, v) / count(w) = q(v|w)
+        """
+        if prev_tag not in self.tag_tag_counts_dict:
+            return 1 / sum(self.tags_count.values())
+        if tag not in self.tag_tag_counts_dict[prev_tag]:
+            return 1 / self.tags_count[prev_tag] + len(self.tags_count)
+        return (self.tag_tag_counts_dict[prev_tag][tag] + 1)/ (self.tags_count[prev_tag] + len(self.tags_count))
+
     def calculate_errors(self):
         """
         this function calculate the training, test and total model errors.
@@ -193,7 +205,7 @@ class BrownCorpus(object):
         curr_tag = "NN"
         for w in self.tags:
             viterbi = self.viterbi_table[(k, w)]
-            emission = self.emission(sentence[k+1].lower(), v)
+            emission = self.emission(sentence[k+1], v)
             transition = self.transition(w, v)
             # if(emission > 0):
             #     print(self.tag_tag_counts_dict[w])
@@ -204,7 +216,7 @@ class BrownCorpus(object):
                 curr_max = result
                 curr_tag = w
 
-        return curr_max*10, curr_tag
+        return curr_max*(10**5), curr_tag
 
     def compute_maximize_tag_first_row(self, sentence):
         curr_max = 0
@@ -297,8 +309,7 @@ def main():
     bc = BrownCorpus(PERCENTAGE)
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
-    # bc.get_list_most_suitable_tag_word()
-
+    # bc.get_list_most_s
     print(bc.viterbi("But Holmes was rejected again '' on the basis of his record and interview '' ."))
     # sen = "The jury said it did find that many of ."
     # tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
@@ -309,6 +320,15 @@ def main():
     #     print(' '.join(bc.viterbi(sen)))
     #     print(' '.join([x[1] for x in sent]))
     #     print(sen)
+    sen = "The jury said it did find that many of ."
+    tshuva = 'AT NN RBR VBD IN NN NNS CS AT NN-TL JJ-TL NN-TL , WDT HVD JJ NN IN AT NN , `` VBZ AT NN CC NNS IN AT NN-TL IN-TL NP-TL '' IN AT NN IN WDT AT NN BEDZ VBN .'
+    for sent in bc.test_set[1:150]:
+        sent = sent[0:]
+        sen = ' '.join([x[0] for x in sent])
+        print('--------------------------')
+        print(' '.join(bc.viterbi3(sen)))
+        print(' '.join([x[1] for x in sent]))
+        print(sen)
     # print("--->")
     # bc.eval_pseudo_tag("Hello")
 
