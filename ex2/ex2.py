@@ -2,6 +2,7 @@ from nltk.corpus import brown
 import re
 # constants
 PERCENTAGE = 10
+START_PSUDOING = 10
 TAG = 0
 COUNTS = 1
 FREQ = 1
@@ -27,7 +28,7 @@ PSEUDOS = [
 
 class BrownCorpus(object):
 
-    def __init__(self, percentage):
+    def __init__(self, percentage, use_pseudo = False):
         # extract the last PERCENTAGE from brown corpus to be test set
         # the first 100 - PERCENTAGE from brown corpus to be the training set
         brown_news_tagged = brown.tagged_sents(categories='news')
@@ -38,6 +39,9 @@ class BrownCorpus(object):
 
 
         self.words_count = {}
+        self.pseudo_count = {}
+        self.pseudo_tag_count = {}
+        self.tag_pseudo_count = {}
         self.tags_count = {}
         self.max_tags = {}
 
@@ -94,6 +98,25 @@ class BrownCorpus(object):
                 self.training_set_tag_word[tag][word] += 1
                 self.tags_count[tag] += 1
 
+        for word in self.words_count:
+            if(self.words_count[word] > START_PSUDOING):
+                continue
+            pseudo = self.eval_pseudo_tag(word)
+            if pseudo not in self.pseudo_count:
+                self.pseudo_count[pseudo] = 0
+                self.pseudo_tag_count[pseudo] = {}
+            self.pseudo_count[pseudo] += self.words_count[word]
+            for tag,count in self.training_set_word_tag[word].items():
+                if tag not in self.pseudo_tag_count[pseudo]:
+                    self.pseudo_tag_count[pseudo][tag] = 0
+                self.pseudo_tag_count[pseudo][tag] += count
+                if tag not in self.tag_pseudo_count:
+                    self.tag_pseudo_count[tag] = {}
+                if pseudo not in self.tag_pseudo_count[tag]:
+                    self.tag_pseudo_count[tag][pseudo] = 0
+                self.tag_pseudo_count[tag][pseudo] += self.words_count[word]
+
+
         # we can change this line of code to set biGram,
         # triGram or whatever we like :D
         for sentence in self.training_set:
@@ -106,8 +129,13 @@ class BrownCorpus(object):
                     self.tag_tag_counts_dict[prev_tag][tag] = 0
                 self.tag_tag_counts_dict[prev_tag][tag] += 1
 
+
         self.viterbiTable = {}
         self.prob = {}
+
+
+        self.emit = self.emission_pseudos
+        self.transit = self.transition
 
     def get_max_tag(self, word):
         """
@@ -147,6 +175,16 @@ class BrownCorpus(object):
         num_of_tags = len(self.tags_count)
         return (self.training_set_tag_word[tag][word] + 1) / \
                (self.tags_count[tag] + num_of_tags)
+
+    def emission_pseudos(self, word, tag):
+        if word in self.words_count and self.words_count[word] > START_PSUDOING:
+            return self.emission(word, tag)
+        pseudo = self.eval_pseudo_tag(word)
+        if tag not in self.tag_pseudo_count:
+            return 0
+        if pseudo not in self.tag_pseudo_count[tag]:
+            return 0
+        return self.tag_pseudo_count[tag][pseudo] / self.tags_count[tag]
 
     def transition(self, prev_tag, tag):
         """
@@ -205,8 +243,8 @@ class BrownCorpus(object):
         curr_tag = "NN"
         for w in self.tags:
             viterbi = self.viterbi_table[(k, w)]
-            emission = self.emission(sentence[k+1], v)
-            transition = self.transition(w, v)
+            emission = self.emit(sentence[k+1], v)
+            transition = self.transit(w, v)
             # if(emission > 0):
             #     print(self.tag_tag_counts_dict[w])
             # if (transition > 0):
@@ -296,6 +334,15 @@ class BrownCorpus(object):
                 return pseudoGroup['text']
         return 'other'
 
+    def convert_to_pseudo(self, corpus):
+        pseudo_corpus = []
+        for sentence in corpus:
+            pseudo_sentence = []
+            for word,tag in sentence:
+                pseudo_sentence.append((self.eval_pseudo_tag(word), tag))
+            pseudo_corpus.append(pseudo_sentence)
+        return pseudo_corpus
+
 
 
 
@@ -306,7 +353,7 @@ class BrownCorpus(object):
 def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
-    bc = BrownCorpus(PERCENTAGE)
+    bc = BrownCorpus(PERCENTAGE, True)
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_s
