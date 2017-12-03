@@ -292,8 +292,10 @@ class BrownCorpus(object):
             if result >= curr_max:
                 curr_max = result
                 curr_tag = w
-
         return curr_max, curr_tag
+
+
+
 
     def compute_maximize_tag_first_row(self, sentence):
         curr_max = 0
