@@ -8,7 +8,7 @@ COUNTS = 1
 FREQ = 1
 TUPLE_TAG = 1
 TOTAL = 'total'
-NON_ZERO_CONST = 0.000001
+NON_ZERO_CONST = 0.00000000000001
 
 
 PSEUDOS = [
@@ -144,6 +144,9 @@ class BrownCorpus(object):
         elif (specialPower == 'PLUS_ONE'):
             self.emit = self.emission_add_1_smoothing
             self.transit = self.transition_add_1_smoothing
+        elif (specialPower == 'PSEUDO_PLUS'):
+            self.emit = self.emission_pseudos_add_1
+            self.transit = self.transition_add_1_smoothing
         elif (specialPower == ''):
             self.emit = self.emission
             self.transit = self.transition
@@ -185,11 +188,11 @@ class BrownCorpus(object):
 
     def emission_add_1_smoothing(self, word, tag):
         # this function will calculate p add_1(word | tag)
-        if tag not in self.tags:
-            return 0
-        if word not in self.training_set_tag_word[tag]:
-            return 0
         num_of_tags = len(self.tags_count)
+        if tag not in self.tags:
+            return 1 / sum(self.tags_count.values())
+        if word not in self.training_set_tag_word[tag]:
+            return 1 / (self.tags_count[tag] + num_of_tags)
         return (self.training_set_tag_word[tag][word] + 1) / \
                (self.tags_count[tag] + num_of_tags)
 
@@ -203,6 +206,15 @@ class BrownCorpus(object):
             return 0
         return self.tag_pseudo_count[tag][pseudo] / self.tags_count[tag]
 
+    def emission_pseudos_add_1(self, word,tag):
+        if word in self.words_count and self.words_count[word] > START_PSUDOING:
+            return self.emission(word, tag)
+        pseudo = self.eval_pseudo_tag(word)
+        if tag not in self.tag_pseudo_count:
+            return 1 / sum(self.tags_count.values())
+        if pseudo not in self.tag_pseudo_count[tag]:
+            return 1 / (self.tags_count[tag] + len(self.tags_count))
+        return self.tag_pseudo_count[tag][pseudo] / self.tags_count[tag]
     def transition(self, prev_tag, tag):
         """
         :param prev_tag:
@@ -232,7 +244,7 @@ class BrownCorpus(object):
         count_wrong = 0
         count_total = 0
         count_sentences = 0
-        for sentence in self.test_set[0:100]:
+        for sentence in self.test_set[:50]:
             count_sentences += 1
             words = ""
             tags = []
@@ -378,15 +390,6 @@ class BrownCorpus(object):
                 return pseudoGroup['text']
         return 'other'
 
-    def convert_to_pseudo(self, corpus):
-        pseudo_corpus = []
-        for sentence in corpus:
-            pseudo_sentence = []
-            for word,tag in sentence:
-                pseudo_sentence.append((self.eval_pseudo_tag(word), tag))
-            pseudo_corpus.append(pseudo_sentence)
-        return pseudo_corpus
-
 
 
 
@@ -397,7 +400,7 @@ class BrownCorpus(object):
 def main():
     # initialize brown corpus training set and test set, test data will be the last
     # PERCENTAGE
-    bc = BrownCorpus(PERCENTAGE, '')
+    bc = BrownCorpus(PERCENTAGE, 'PSEUDO_PLUS')
     # return a list such that for each word we will have the most common tag and the
     # probability of p(tag|word)
     # bc.get_list_most_s
