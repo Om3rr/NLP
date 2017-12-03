@@ -42,58 +42,39 @@ class BrownCorpus(object):
         training_set_size = round(brown_news_tagged_size * percentage / 100)
         self.test_set = brown_news_tagged[-training_set_size:]
         self.training_set = brown_news_tagged[:brown_news_tagged_size - training_set_size]
-
-
         self.words_count = {}
         self.pseudo_count = {}
         self.pseudo_tag_count = {}
         self.tag_pseudo_count = {}
         self.tags_count = {}
         self.max_tags = {}
-
+        self.confusion_matrix = {}
         self.viterbi_table = {}
         self.bp_table = {}
         self.known_words = set()
         self.test_words = set()
         self.unknown_words = set()
-
         self.tags = set()
-
-        for sentence in self.training_set:
-            for word, tag in sentence:
-                self.known_words.add(word)
-                self.tags.add(tag)
-
-
-
-        for sentence in self.test_set:
-            for word, tag in sentence:
-                self.test_words.add(word)
-
+        self.training_set_word_tag = {}
+        self.training_set_tag_word = {}
+        self.viterbiTable = {}
+        self.prob = {}
+        self.tag_tag_counts_dict = {}
+        self.init_count()
+        self.init_word_tag()
+        self.init_tag_word()
+        self.init_transition()
+        self.init_pseudos()
         # set of unknown words = test words Minus known words
         self.unknown_words = self.test_words - self.known_words
-
-        self.tag_tag_counts_dict = {}
-
         # initialize the dictionary training_set_word_tag such that for each tuple
         # of word and tag as a key, we will have a value which represents the count
         # (= number of occurrences) of the tag following to the word in all sentences.
         # so, for each pair, if it's the first time we encountered initialize the value
         # to be 1, otherwise, value++
-        self.training_set_word_tag = {}
+        self.init_relevant_functions(specialPower)
 
-        self.training_set_tag_word = {}
-
-        for sentence in self.training_set:
-            for word, tag in sentence:
-                if word not in self.training_set_word_tag:
-                    self.training_set_word_tag[word] = {}
-                    self.words_count[word] = 0
-                if tag not in self.training_set_word_tag[word]:
-                    self.training_set_word_tag[word][tag] = 0
-                self.training_set_word_tag[word][tag] += 1
-                self.words_count[word] += 1
-
+    def init_tag_word(self):
         for sentence in self.training_set:
             for word, tag in sentence:
                 if tag not in self.training_set_tag_word:
@@ -104,6 +85,40 @@ class BrownCorpus(object):
                 self.training_set_tag_word[tag][word] += 1
                 self.tags_count[tag] += 1
 
+    def init_word_tag(self):
+        for sentence in self.training_set:
+            for word, tag in sentence:
+                if word not in self.training_set_word_tag:
+                    self.training_set_word_tag[word] = {}
+                    self.words_count[word] = 0
+                if tag not in self.training_set_word_tag[word]:
+                    self.training_set_word_tag[word][tag] = 0
+                self.training_set_word_tag[word][tag] += 1
+                self.words_count[word] += 1
+
+    def init_count(self):
+        for sentence in self.training_set:
+            for word, tag in sentence:
+                self.known_words.add(word)
+                self.tags.add(tag)
+        for sentence in self.test_set:
+            for word, tag in sentence:
+                self.test_words.add(word)
+
+    def init_transition(self):
+        # we can change this line of code to set biGram,
+        # triGram or whatever we like :D
+        for sentence in self.training_set:
+            sentence += [('', 'STOP')]
+            for idx in range(1, len(sentence)):
+                prev_tag, tag = sentence[idx - 1][TUPLE_TAG], sentence[idx][TUPLE_TAG]
+                if prev_tag not in self.tag_tag_counts_dict:
+                    self.tag_tag_counts_dict[prev_tag] = {}
+                if tag not in self.tag_tag_counts_dict[prev_tag]:
+                    self.tag_tag_counts_dict[prev_tag][tag] = 0
+                self.tag_tag_counts_dict[prev_tag][tag] += 1
+
+    def init_pseudos(self):
         for word in self.words_count:
             if(self.words_count[word] > START_PSUDOING):
                 continue
@@ -122,35 +137,22 @@ class BrownCorpus(object):
                     self.tag_pseudo_count[tag][pseudo] = 0
                 self.tag_pseudo_count[tag][pseudo] += self.words_count[word]
 
-
-        # we can change this line of code to set biGram,
-        # triGram or whatever we like :D
-        for sentence in self.training_set:
-            sentence += [('','STOP')]
-            for idx in range(1, len(sentence)):
-                prev_tag, tag = sentence[idx-1][TUPLE_TAG], sentence[idx][TUPLE_TAG]
-                if prev_tag not in self.tag_tag_counts_dict:
-                    self.tag_tag_counts_dict[prev_tag] = {}
-                if tag not in self.tag_tag_counts_dict[prev_tag]:
-                    self.tag_tag_counts_dict[prev_tag][tag] = 0
-                self.tag_tag_counts_dict[prev_tag][tag] += 1
-
-
-        self.viterbiTable = {}
-        self.prob = {}
-
-        if(specialPower == 'PSEUDO'):
+    def init_relevant_functions(self, specialPower):
+        if (specialPower == 'PSEUDO'):
             self.emit = self.emission_pseudos
             self.transit = self.transition
-        elif(specialPower == 'PLUS_ONE'):
+        elif (specialPower == 'PLUS_ONE'):
             self.emit = self.emission_add_1_smoothing
             self.transit = self.transition_add_1_smoothing
-        elif(specialPower == ''):
+        elif (specialPower == ''):
             self.emit = self.emission
             self.transit = self.transition
         else:
             print("Cant find this special power please try ['PSEUDO', 'PLUS_ONE', ''] :D")
             raise ValueError
+
+
+
 
     def get_max_tag(self, word):
         """
@@ -230,7 +232,7 @@ class BrownCorpus(object):
         count_wrong = 0
         count_total = 0
         count_sentences = 0
-        for sentence in self.test_set:
+        for sentence in self.test_set[0:100]:
             count_sentences += 1
             words = ""
             tags = []
@@ -242,11 +244,18 @@ class BrownCorpus(object):
                 count_total += 1
                 if not tags[i] == viterbi_tags[i]:
                     count_wrong += 1
+                    #Confusion matrix fill
+                    self.add_to_confusion(tags[i], viterbi_tags[i])
             print(count_sentences)
             print(count_wrong / count_total)
             print(tags)
             print(viterbi_tags)
         return count_wrong / count_total
+
+    def add_to_confusion(self, orig, predict):
+        if((orig, predict) not in self.confusion_matrix):
+            self.confusion_matrix[(orig, predict)] = 0
+        self.confusion_matrix[(orig, predict)] += 1
 
     def calculate_errors(self):
         """
@@ -396,6 +405,8 @@ def main():
     # print(bc.viterbi("I want to eat"))
     print(bc.calculate_errors())
     print(bc.calculate_errors_test_set_viterbi())
+    confusion = sorted(bc.confusion_matrix.items(), key=lambda x:x[1], reverse=True)
+    print(confusion[0:10])
     # for sent in bc.test_set[1:150]:
     #     sent = sent[0:]
     #     sen = ' '.join([x[0] for x in sent])
