@@ -422,26 +422,26 @@ Details results (POS EXTRACTOR):
 ('Trump', 'marked of with in', 'Melbourne')
 --------------------- Total number of triplets: 402 ---------------------
 --------------------- Random 30 Triplets ---------------------
-('Trump Foundation', 'that was in of regarding ordered cease in', 'New York')
-('States', 'refrain from of in', 'Holy City')
-('Trump', 'appointed to', 'Supreme Court')
-('Trump', 'won against', 'Hillary Clinton')
-('Fred', 'in revitalizing foreclosed in', 'Cincinnati')
-('Trump', 'signaled run for by filing with', 'FEC')
-('Trump', 'pledged eliminate', 'Clean Power Plan')
-('Trump', 'were nominated by', 'Republican Party')
-('Maryanne', 'is on', 'Third Circuit')
-('Republican White House', 'combined with of of', 'Congress')
-('Trump', 'signed', 'Order')
-('Trump', 'acknowledged that', 'Obama')
-('Obama', 'deals with', 'Cuba')
-('Trump', 'announced for on', 'June')
-('NSA Director Michael Rogers', 'issue saying was that colluded with', 'Russia')
-('Marble Collegiate Church', 'in in performed by', 'Reverend Norman Vincent Peale')
-('Tiffany', 'was raised by in', 'California')
-('NBC', 'announced that would be renewing', 'Apprentice')
-('Trump', 'acknowledged that was born in', 'United States')
-('Clean Power Plan', 'withdraw from', 'Paris Climate Agreement')
+('Trump Foundation', 'that was in of regarding ordered cease in', 'New York') Valid
+('States', 'refrain from of in', 'Holy City') Invalid
+('Trump', 'appointed to', 'Supreme Court') Valid
+('Trump', 'won against', 'Hillary Clinton') Valid
+('Fred', 'in revitalizing foreclosed in', 'Cincinnati') Valid
+('Trump', 'signaled run for by filing with', 'FEC') Valid
+('Trump', 'pledged eliminate', 'Clean Power Plan') Valid
+('Trump', 'were nominated by', 'Republican Party') Valid
+('Maryanne', 'is on', 'Third Circuit') Valid
+('Republican White House', 'combined with of of', 'Congress') Invalid
+('Trump', 'signed', 'Order') Valid
+('Trump', 'acknowledged that', 'Obama') Valid
+('Obama', 'deals with', 'Cuba') Valid
+('Trump', 'announced for on', 'June') Valid
+('NSA Director Michael Rogers', 'issue saying was that colluded with', 'Russia') Valid
+('Marble Collegiate Church', 'in in performed by', 'Reverend Norman Vincent Peale') Valid
+('Tiffany', 'was raised by in', 'California') Valid
+('NBC', 'announced that would be renewing', 'Apprentice') Valid
+('Trump', 'acknowledged that was born in', 'United States') Valid
+('Clean Power Plan', 'withdraw from', 'Paris Climate Agreement') Valid
 ('Trump', 'acquired', 'Plaza Hotel') - V
 ('Trump', 'were leaked to from', 'New York Times')
 ('North Korea', 'attacked', 'Guam') - V
@@ -660,37 +660,37 @@ Details results (POS EXTRACTOR):
 ('Heineken', 'aired during', 'Super Bowl')
 --------------------- Total number of triplets: 202 ---------------------
 --------------------- Random 30 Triplets ---------------------
-('Pitt', 'enrolled in', 'University')
-('Sudan', 'dedicated to affected by in', 'Darfur')
-('Pitt', 'met with of of in', 'March')
-('Jolie', 'flew to', 'Haiti')
-('Pitt', 'met', 'Friends')
-('Andrew Dominik', 'produced by', 'Plan B Entertainment')
-('Pitt', 'said in', 'February')
-('Glory Days', 'took in', 'HBO')
-('Pitt', 'met in married in in', 'Malibu')
-('Pitt', 'starred in of', 'Fall')
-('Jolie', 'filed for from', 'Pitt')
-('Pitt', 'enrolled in of', 'Missouri')
-('Pitt', 'said that would marry', 'Jolie')
-('Pitt', 'starred opposite in', 'Mexican')
-('Pitt', 'starred opposite', 'Julia Roberts')
-('Clooney', 'was described by', 'Paul Clinton')
-('Washington Times', 'stated that', 'Pitt')
-('Pitt', 'supports', 'Campaign')
-('Pitt', 'attended', 'Kickapoo High School')
-('Pitt', 'starred in', 'Johnny Suede')
-('Pitt', 'starred in', 'Robert Zemeckis')
-('Lewis', 'in described by of', 'Rolling Stone')
-('November', 'of had on', 'ABC')
-('Pitt', 'starred in', 'Thirteen')
-('Pitt', 'took of', 'Paul Maclean')
-('Pitt', 'had in', 'Meet Joe Black')
-('Pitt', 'starred in', 'Fury')
-('Cannes Film Festival', 'was featured at', 'Toronto International Film Festival')
-('Pitt', 'took of in', 'River')
-('U.N.', 'help', 'Pakistanis')
-('World War II', 'directed written by', 'David Ayer')
+('Pitt', 'enrolled in', 'University') - V
+('Sudan', 'dedicated to affected by in', 'Darfur') - X
+('Pitt', 'met with of of in', 'March') - X
+('Jolie', 'flew to', 'Haiti') - V
+('Pitt', 'met', 'Friends') - V
+('Andrew Dominik', 'produced by', 'Plan B Entertainment') - X
+('Pitt', 'said in', 'February') - X
+('Glory Days', 'took in', 'HBO') - V
+('Pitt', 'met in married in in', 'Malibu') - V
+('Pitt', 'starred in of', 'Fall') - X
+('Jolie', 'filed for from', 'Pitt') - V
+('Pitt', 'enrolled in of', 'Missouri') - X
+('Pitt', 'said that would marry', 'Jolie') - V
+('Pitt', 'starred opposite in', 'Mexican') - V
+('Pitt', 'starred opposite', 'Julia Roberts') - V
+('Clooney', 'was described by', 'Paul Clinton') - V
+('Washington Times', 'stated that', 'Pitt') - V
+('Pitt', 'supports', 'Campaign') - V
+('Pitt', 'attended', 'Kickapoo High School') - V
+('Pitt', 'starred in', 'Johnny Suede') - V
+('Pitt', 'starred in', 'Robert Zemeckis') - V
+('Lewis', 'in described by of', 'Rolling Stone') - V
+('November', 'of had on', 'ABC') - X
+('Pitt', 'starred in', 'Thirteen') - V
+('Pitt', 'took of', 'Paul Maclean') - X
+('Pitt', 'had in', 'Meet Joe Black') - V
+('Pitt', 'starred in', 'Fury') - V
+('Cannes Film Festival', 'was featured at', 'Toronto International Film Festival') - X
+('Pitt', 'took of in', 'River') - V
+('U.N.', 'help', 'Pakistanis') - V
+('World War II', 'directed written by', 'David Ayer') - V
 
 
 ----------------- POS EXTRACTOR, page = Angelina Jolie -----------------
