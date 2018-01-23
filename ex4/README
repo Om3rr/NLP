@@ -2,18 +2,18 @@ Summary results: (POS EXTRACTOR)
 
 Page: Donald Trump
 Number of triplets: 402
-Number of good sentences from Random 30 triplets:
-Accuracy rate:  
+Number of good sentences from Random 30 triplets: 25
+Accuracy rate: 83%
 
 Page: Brad Pitt
 Number of triplets: 202
-Number of good sentences from Random 30 triplets:
-Accuracy rate:  
+Number of good sentences from Random 30 triplets: 22
+Accuracy rate:  73%
 
 Page: Angelina Jolie
 Number of triplets: 169
-Number of good sentences from Random 30 triplets:
-Accuracy rate:  
+Number of good sentences from Random 30 triplets: 19
+Accuracy rate: 63%
 
 Details results (POS EXTRACTOR):
 
@@ -422,37 +422,37 @@ Details results (POS EXTRACTOR):
 ('Trump', 'marked of with in', 'Melbourne')
 --------------------- Total number of triplets: 402 ---------------------
 --------------------- Random 30 Triplets ---------------------
-('Trump Foundation', 'that was in of regarding ordered cease in', 'New York') Valid
-('States', 'refrain from of in', 'Holy City') Invalid
-('Trump', 'appointed to', 'Supreme Court') Valid
-('Trump', 'won against', 'Hillary Clinton') Valid
-('Fred', 'in revitalizing foreclosed in', 'Cincinnati') Valid
-('Trump', 'signaled run for by filing with', 'FEC') Valid
-('Trump', 'pledged eliminate', 'Clean Power Plan') Valid
-('Trump', 'were nominated by', 'Republican Party') Valid
-('Maryanne', 'is on', 'Third Circuit') Valid
-('Republican White House', 'combined with of of', 'Congress') Invalid
-('Trump', 'signed', 'Order') Valid
-('Trump', 'acknowledged that', 'Obama') Valid
-('Obama', 'deals with', 'Cuba') Valid
-('Trump', 'announced for on', 'June') Valid
-('NSA Director Michael Rogers', 'issue saying was that colluded with', 'Russia') Valid
-('Marble Collegiate Church', 'in in performed by', 'Reverend Norman Vincent Peale') Valid
-('Tiffany', 'was raised by in', 'California') Valid
-('NBC', 'announced that would be renewing', 'Apprentice') Valid
-('Trump', 'acknowledged that was born in', 'United States') Valid
-('Clean Power Plan', 'withdraw from', 'Paris Climate Agreement') Valid
-('Trump', 'acquired', 'Plaza Hotel') - V
-('Trump', 'were leaked to from', 'New York Times')
-('North Korea', 'attacked', 'Guam') - V
-('Linda McMahon', 'became', 'Administrator') - V
-('Trump', 'acquired', 'Hotel Delmonico') - V
-('Obama', 'was born in', 'United States') - V
-('Ivanka', 'hosted', 'Miss Teen USA') - V
-('Trump', 'told', 'Larry King Live') - V
-('NBC', 'decided end with stated that would air', 'Miss USA')
-('Trump', 'asked of', 'National Intelligence')
-('Trump Organization', 'expanded beyond', 'New York')
+('Trump Foundation', 'that was in of regarding ordered cease in', 'New York')- Valid
+('States', 'refrain from of in', 'Holy City')- Invalid
+('Trump', 'appointed to', 'Supreme Court')- Valid
+('Trump', 'won against', 'Hillary Clinton')- Valid
+('Fred', 'in revitalizing foreclosed in', 'Cincinnati') -Valid
+('Trump', 'signaled run for by filing with', 'FEC') - Valid
+('Trump', 'pledged eliminate', 'Clean Power Plan') - Valid
+('Trump', 'were nominated by', 'Republican Party')- Valid
+('Maryanne', 'is on', 'Third Circuit') - Valid
+('Republican White House', 'combined with of of', 'Congress') - Invalid
+('Trump', 'signed', 'Order') - Valid
+('Trump', 'acknowledged that', 'Obama') - Valid
+('Obama', 'deals with', 'Cuba') - Valid
+('Trump', 'announced for on', 'June') - Valid
+('NSA Director Michael Rogers', 'issue saying was that colluded with', 'Russia')- Valid
+('Marble Collegiate Church', 'in in performed by', 'Reverend Norman Vincent Peale') - Valid
+('Tiffany', 'was raised by in', 'California') - Valid
+('NBC', 'announced that would be renewing', 'Apprentice') - Valid
+('Trump', 'acknowledged that was born in', 'United States') - Valid
+('Clean Power Plan', 'withdraw from', 'Paris Climate Agreement') - Valid
+('Trump', 'acquired', 'Plaza Hotel') - Valid
+('Trump', 'were leaked to from', 'New York Times') - Invalid
+('North Korea', 'attacked', 'Guam') - Valid
+('Linda McMahon', 'became', 'Administrator') - Valid
+('Trump', 'acquired', 'Hotel Delmonico') - Valid
+('Obama', 'was born in', 'United States') - Valid
+('Ivanka', 'hosted', 'Miss Teen USA') - Valid
+('Trump', 'told', 'Larry King Live') - Valid
+('NBC', 'decided end with stated that would air', 'Miss USA') - Invalid 
+('Trump', 'asked of', 'National Intelligence') - Invalid
+('Trump Organization', 'expanded beyond', 'New York') - Valid
 
 
 ----------------- POS EXTRACTOR, page = Brad Pitt -----------------
@@ -865,37 +865,37 @@ Details results (POS EXTRACTOR):
 ('Time', 'agreed that', 'Jolie')
 --------------------- Total number of triplets: 169 ---------------------
 --------------------- Random 30 Triplets ---------------------
-('Jolie', 'was named at in', 'Geneva')
-('Jolie', 'began improve after won for in', 'TNT')
-('Jolie', 'voiced', 'Kung Fu Panda')
-('CIA', 'goes on after is accused of being', 'KGB')
-('Unbroken', 'is based on', 'Laura Hillenbrand')
-('U.S.', 'banned from', 'Cambodia')
-('Jolie', 'was named', 'UNHCR Goodwill Ambassador')
-('Jolie', 'announced of from', 'Cambodia')
-('Jolie', 'explained that had been after in', 'Girl')
-('Jolie', 'made with In of', 'Blood')
-('New York Times', 'questioned follow', 'Oscar')
-('Jolie', 'made as in', 'Sky Captain')
-('Salt', 'underwent after suggested', 'Jolie')
-('Pitt', 'support through', 'Jolie')
-('Elvis Mitchell', 'questioned follow', 'Oscar')
-('Jolie', 'took in', 'Clint Eastwood')
-('Jolie', 'starred opposite in', 'Tourist')
-('Jolie', 'witnessed of while filming', 'Lara Croft')
-('New York Times', 'considered as defining as', 'Kirk Douglas')
-('BRCA', 'held by', 'Myriad Genetics')
-('Jolie', 'was promoted to of', 'Special Envoy')
-('Unbroken', 'was considered', 'Director')
-('Jolie', 'gained for as', 'Gia')
-('U.S.', 'Founded in between', 'Jolie')
-('Coen', 'starred', "Jack O'Connell")
-('Times', 'noted that', 'Jolie')
-('Queen Elizabeth II', 'presented with of during following', 'October')
-('Jolie', 'was dating', 'Timothy Hutton')
-('Jolie', 'took of in', 'Girl')
-('Pitt', 'adopted on', 'February')
-('Jolie', 'contacted for', 'Refugees')
+('Jolie', 'was named at in', 'Geneva') - X
+('Jolie', 'began improve after won for in', 'TNT') - X
+('Jolie', 'voiced', 'Kung Fu Panda') - V
+('CIA', 'goes on after is accused of being', 'KGB') - V
+('Unbroken', 'is based on', 'Laura Hillenbrand') - V
+('U.S.', 'banned from', 'Cambodia') - V
+('Jolie', 'was named', 'UNHCR Goodwill Ambassador') - X
+('Jolie', 'announced of from', 'Cambodia') - X
+('Jolie', 'explained that had been after in', 'Girl')- X
+('Jolie', 'made with In of', 'Blood') - X
+('New York Times', 'questioned follow', 'Oscar') - V
+('Jolie', 'made as in', 'Sky Captain') - V
+('Salt', 'underwent after suggested', 'Jolie') - V
+('Pitt', 'support through', 'Jolie') - V
+('Elvis Mitchell', 'questioned follow', 'Oscar') - X
+('Jolie', 'took in', 'Clint Eastwood') - V
+('Jolie', 'starred opposite in', 'Tourist') - V
+('Jolie', 'witnessed of while filming', 'Lara Croft') - V
+('New York Times', 'considered as defining as', 'Kirk Douglas') - V
+('BRCA', 'held by', 'Myriad Genetics') - V
+('Jolie', 'was promoted to of', 'Special Envoy') - X
+('Unbroken', 'was considered', 'Director') - V
+('Jolie', 'gained for as', 'Gia') - V
+('U.S.', 'Founded in between', 'Jolie')- X
+('Coen', 'starred', "Jack O'Connell")- V
+('Times', 'noted that', 'Jolie') - V
+('Queen Elizabeth II', 'presented with of during following', 'October')-X
+('Jolie', 'was dating', 'Timothy Hutton') - V
+('Jolie', 'took of in', 'Girl')- X
+('Pitt', 'adopted on', 'February') -V
+('Jolie', 'contacted for', 'Refugees')- V
 
 
 
@@ -904,18 +904,18 @@ Summary results: (Dep Tree EXTRACTOR)
 
 Page: Donald Trump
 Number of triplets: 121
-Number of good sentences from Random 30 triplets:
-Accuracy rate:  
+Number of good sentences from Random 30 triplets: 28
+Accuracy rate: 93%
 
 Page: Brad Pitt
 Number of triplets: 52
-Number of good sentences from Random 30 triplets:
-Accuracy rate:  
+Number of good sentences from Random 30 triplets: 30
+Accuracy rate:  100%
 
 Page: Angelina Jolie
 Number of triplets: 51
-Number of good sentences from Random 30 triplets: 
-Accuracy rate:  
+Number of good sentences from Random 30 triplets: 28
+Accuracy rate: 93%
 
 
 ----------------- DEP Tree EXTRACTOR, page = Donald Trump -----------------
@@ -1042,37 +1042,37 @@ Accuracy rate:
 (Trump, 'marked on', February)
 ---------------- Total number of triplets 121 ----------------
 --------------------- Random 30 Triplets ---------------------
-(Trump, 'issued On', March)
-(Trump, recognized, Jerusalem)
-(Trump, founded, Hotels)
-(Trump, 'made in', February)
-(Trump, 'appeared at', WrestleMania)
-(Trump, acquired, Hotel)
-(House, 'voted In', May)
-(Trump, 'appointed to', Court)
-(in, 'praised In', January)
-(Trump, dismissed, Comey)
-(Simpsons, episode, Bart)
-(Trump, cited, Peale)
-(Taj, 'opened in', April)
-(Trump, praised, Putin)
-(Trump, 'announced at', Tower)
-(Trump, 'announced On', June)
-(Trump, 'purchased In', September)
-(Trump, 'nominated On', January)
-(Trump, withdrew, States)
-(Sherman, 'introduced In', July)
-(Trump, appointed, Gorsuch)
-(Trump, 'told In', February)
-(Trump, 'said on', Twitter)
-(Trump, 'recognized On', December)
-(Trump, 'run against', Cuomo)
-(Trump, withdrew, Policy)
-(Trump, criticized, Curiel)
-(Rosenstein, appointed, Mueller)
-(Trump, 'losing to', Cuomo)
-(Bannon, 'resigned on', August)
-(Forbes, 'ranked after', Putin)
+(Trump, 'issued On', March) - V
+(Trump, recognized, Jerusalem)- V
+(Trump, founded, Hotels) - V
+(Trump, 'made in', February) - V
+(Trump, 'appeared at', WrestleMania) - V
+(Trump, acquired, Hotel) - V
+(House, 'voted In', May) - X
+(Trump, 'appointed to', Court) - V
+(in, 'praised In', January) - X
+(Trump, dismissed, Comey) - V
+(Simpsons, episode, Bart) - V
+(Trump, cited, Peale) -V
+(Taj, 'opened in', April) - V
+(Trump, praised, Putin) - V
+(Trump, 'announced at', Tower) - V
+(Trump, 'announced On', June) - V
+(Trump, 'purchased In', September) - V
+(Trump, 'nominated On', January) - V
+(Trump, withdrew, States) - V
+(Sherman, 'introduced In', July) - V
+(Trump, appointed, Gorsuch) - V
+(Trump, 'told In', February) - V
+(Trump, 'said on', Twitter) - V
+(Trump, 'recognized On', December) - V
+(Trump, 'run against', Cuomo) - V
+(Trump, withdrew, Policy) - V
+(Trump, criticized, Curiel) - V
+(Rosenstein, appointed, Mueller) - V
+(Trump, 'losing to', Cuomo)- V
+(Bannon, 'resigned on', August) - V
+(Forbes, 'ranked after', Putin) - V
 ----------------- DEP Tree EXTRACTOR, page = Brad Pitt -----------------
 (Pitt, described, Springfield)
 (Pitt, attended, School)
@@ -1128,37 +1128,37 @@ Accuracy rate:
 (Pitt, won, Alive)
 ---------------- Total number of triplets 52 ----------------
 --------------------- Random 30 Triplets ---------------------
-(Pitt, played, Ryan)
-(Pitt, adopted, Pax)
-(Pitt, 'starred alongside', Freeman)
-(Foundation, 'donated In', June)
-(Pitt, 'met in', March)
-(Pitt, 'visited in', October)
-(Pitt, 'starred in', Thirteen)
-(Jolie, 'filed On', September)
-(Jolie, 'adopted On', March)
-(Pitt, 'portrayed in', Club)
-(Pitt, 'accompanied In', July)
-(Pitt, 'was On', December)
-(Pitt, 'reaffirmed In', September)
-(Pitt, 'met with', Obama)
-(Maslin, called, Monkeys)
-(Pitt, 'starred After', Thelma)
-(Pitt, won, Alive)
-(Pitt, described, Springfield)
-(Pitt, 'enrolled in', University)
-(Pitt, 'announced In', January)
-(Pitt, starred, Blanchett)
-(Pitt, 'received in', September)
-(Pitt, met, Aniston)
-(Jolie, adopted, Thien)
-(Pitt, 'had In', November)
-(Pitt, supports, Campaign)
-(Pitt, 'took from', London)
-(Jolie, 'confirmed On', January)
-(Pitt, 'donated In', May)
-(Pitt, starred, Roberts)
-(Pitt, 'adopted in', States)
+(Pitt, played, Ryan) - V
+(Pitt, adopted, Pax) - V
+(Pitt, 'starred alongside', Freeman) - V
+(Foundation, 'donated In', June)- V
+(Pitt, 'met in', March)- V
+(Pitt, 'visited in', October)- V
+(Pitt, 'starred in', Thirteen)- V
+(Jolie, 'filed On', September) - V
+(Jolie, 'adopted On', March) - V
+(Pitt, 'portrayed in', Club) - V
+(Pitt, 'accompanied In', July) - V
+(Pitt, 'was On', December) - V
+(Pitt, 'reaffirmed In', September) - V
+(Pitt, 'met with', Obama) - V
+(Maslin, called, Monkeys) - V
+(Pitt, 'starred After', Thelma) - V
+(Pitt, won, Alive) - V
+(Pitt, described, Springfield) - V
+(Pitt, 'enrolled in', University) - V
+(Pitt, 'announced In', January)- V
+(Pitt, starred, Blanchett) - V
+(Pitt, 'received in', September) - V
+(Pitt, met, Aniston) - V
+(Jolie, adopted, Thien) - V
+(Pitt, 'had In', November) - V
+(Pitt, supports, Campaign) - V
+(Pitt, 'took from', London) - V
+(Jolie, 'confirmed On', January) - V
+(Pitt, 'donated In', May) - V
+(Pitt, starred, Roberts) - V
+(Pitt, 'adopted in', States) - V
 ----------------- DEP Tree EXTRACTOR, page = Angelina Jolie -----------------
 (Jolie, born, Voight)
 (Jolie, 'made in', Lookin)
@@ -1213,35 +1213,35 @@ Accuracy rate:
 (Jolie, 'was among', Time)
 ---------------- Total number of triplets 51 ----------------
 --------------------- Random 30 Triplets ---------------------
-(Jolie, 'married on', August)
-(Jolie, 'launched at', Women)
-(Jolie, 'received In', November)
-(Jolie, established, Foundation)
-(Jolie, 'underwent On', February)
-(Jolie, 'joined in', June)
-(Jolie, 'returned in', November)
-(Jolie, 'traveled to', Namibia)
-(Jolie, born, Voight)
-(Jolie, 'starring as', Croft)
-(Jolie, 'returned in', Playing)
-(Levy, 'noted For', Variety)
-(Sachs, 'noted at', Forum)
-(Jolie, 'comment until', January)
-(Jolie, 'support through', Foundation)
-(Jolie, starred, Banderas)
-(Jolie, contacted, Commissioner)
-(Jolie, 'expanded In', November)
-(Jolie, 'was among', Time)
-(Jolie, launched, Fund)
-(Jolie, 'starred with', Duchovny)
-(Jolie, 'returned to', Cambodia)
-(Jolie, 'starred opposite', Depp)
-(Jolie, 'received from', Board)
-(Jolie, 'starred alongside', Cusack)
-(Jolie, 'adopted on', July)
-(Pearl, chosen, Jolie)
-(Jolie, dating, Hutton)
-(Jolie, received, Award)
-(Jolie, 'announced in', March)
-(Jolie, 'adopted On', March)
+(Jolie, 'married on', August) - V
+(Jolie, 'launched at', Women) - X
+(Jolie, 'received In', November) - V
+(Jolie, established, Foundation) - V
+(Jolie, 'underwent On', February) - V
+(Jolie, 'joined in', June) - V
+(Jolie, 'returned in', November) - V
+(Jolie, 'traveled to', Namibia) - V
+(Jolie, born, Voight) - V
+(Jolie, 'starring as', Croft) - X
+(Jolie, 'returned in', Playing) - V
+(Levy, 'noted For', Variety) - V
+(Sachs, 'noted at', Forum) - V
+(Jolie, 'comment until', January) - V
+(Jolie, 'support through', Foundation) - V
+(Jolie, starred, Banderas) - V
+(Jolie, contacted, Commissioner) - V
+(Jolie, 'expanded In', November) - V
+(Jolie, 'was among', Time) - V
+(Jolie, launched, Fund) - V
+(Jolie, 'starred with', Duchovny) - V
+(Jolie, 'returned to', Cambodia) - V
+(Jolie, 'starred opposite', Depp) - V
+(Jolie, 'received from', Board) - V
+(Jolie, 'starred alongside', Cusack) - V
+(Jolie, 'adopted on', July) - V
+(Pearl, chosen, Jolie) - V
+(Jolie, dating, Hutton) - V
+(Jolie, received, Award) - V
+(Jolie, 'announced in', March) - V
+(Jolie, 'adopted On', March) - V
 
